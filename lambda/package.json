@@ -6,7 +6,7 @@
   "scripts": {
     "start": "sls offline start",
     "invoke:local": "sls invoke local -f",
-    "invoke:aws": "sls invoke local -f",
+    "invoke:aws": "sls invoke -f",
     "deploy": "sls deploy",
     "deploy:prod": "sls deploy --stage production"
   },
