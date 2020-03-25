@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@line/bot-sdk": "^6.8.4",
-    "axios": "^0.19.2",
     "source-map-support": "^0.5.10"
   },
   "devDependencies": {
