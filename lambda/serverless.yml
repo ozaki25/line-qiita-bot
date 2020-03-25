@@ -1,0 +1,27 @@
+service:
+  name: line-qiita-bot
+custom:
+  defaultStage: dev
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+plugins:
+  - serverless-webpack
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ap-northeast-1
+  profile: aa
+  stage: ${opt:stage, self:custom.defaultStage}
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    TZ: Asia/Tokyo
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          method: get
+          path: hello
