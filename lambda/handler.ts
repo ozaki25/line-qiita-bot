@@ -1,10 +1,6 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { Client } from '@line/bot-sdk';
 import 'source-map-support/register';
-
-const channelAccessToken = process.env.CHANNEL_ACCESS_TOKEN;
-
-const lineClient = new Client({ channelAccessToken });
+import { reply, push } from './src/lineClient';
 
 type MessageType = {
   events: {
@@ -25,22 +21,19 @@ type MessageType = {
   destination: string;
 };
 
-function reply({ text, replyToken }) {
-  return lineClient.replyMessage(replyToken, [{ type: 'text', text }]);
-}
-
 export const hello: APIGatewayProxyHandler = async event => {
   const body: MessageType = JSON.parse(event.body);
 
+  body.events.map(async event => console.log(JSON.stringify(event)));
+
   try {
-    const replies = body.events.map(async event => {
-      console.log(JSON.stringify(event));
-      return reply({
-        replyToken: event.replyToken,
-        text: event.message.text,
-      });
+    const replies = body.events.map(async ({ replyToken, message }) => {
+      return reply({ replyToken, text: message.text });
     });
-    const result = await Promise.all(replies);
+    const pushes = body.events.map(async ({ source, message }) => {
+      return push({ userId: source.userId, text: message.text });
+    });
+    const result = await Promise.all([...replies, ...pushes]);
     console.log({ result });
 
     return { statusCode: 200, body: 'OK' };
