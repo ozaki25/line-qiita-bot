@@ -4,6 +4,7 @@
   "description": "Serverless webpack example using Typescript",
   "main": "handler.js",
   "scripts": {
+    "start": "sls offline start",
     "invoke:local": "sls invoke local -f",
     "invoke:aws": "sls invoke local -f",
     "deploy": "sls deploy",

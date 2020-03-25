@@ -5,8 +5,11 @@ custom:
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
+  serverless-offline:
+    httpPort: 8083
 plugins:
   - serverless-webpack
+  - serverless-offline
 provider:
   name: aws
   runtime: nodejs12.x
@@ -23,5 +26,5 @@ functions:
     handler: handler.hello
     events:
       - http:
-          method: get
+          method: post
           path: hello
