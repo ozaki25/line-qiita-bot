@@ -1,10 +1,10 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
+import { Client } from '@line/bot-sdk';
 import 'source-map-support/register';
-import axios from 'axios';
-
-const lineApiURL = 'https://api.line.me/v2/bot/message';
 
 const channelAccessToken = process.env.CHANNEL_ACCESS_TOKEN;
+
+const lineClient = new Client({ channelAccessToken });
 
 type MessageType = {
   events: {
@@ -26,31 +26,23 @@ type MessageType = {
 };
 
 function reply({ text, replyToken }) {
-  const headers = {
-    'content-type': 'application/json',
-    Authorization: `Bearer ${channelAccessToken}`,
-  };
-  return axios.post(
-    `${lineApiURL}/reply`,
-    { replyToken, messages: [{ type: 'text', text }] },
-    { headers },
-  );
+  return lineClient.replyMessage(replyToken, [{ type: 'text', text }]);
 }
 
 export const hello: APIGatewayProxyHandler = async event => {
   const body: MessageType = JSON.parse(event.body);
 
   try {
-    const result = await Promise.all(
-      body.events.map(async event => {
-        console.log(JSON.stringify(event));
-        return reply({
-          replyToken: event.replyToken,
-          text: event.message.text,
-        });
-      }),
-    );
+    const replies = body.events.map(async event => {
+      console.log(JSON.stringify(event));
+      return reply({
+        replyToken: event.replyToken,
+        text: event.message.text,
+      });
+    });
+    const result = await Promise.all(replies);
     console.log({ result });
+
     return { statusCode: 200, body: 'OK' };
   } catch (error) {
     console.log(error.message);
