@@ -26,5 +26,5 @@ functions:
     handler: handler.hello
     events:
       - http:
-          method: post
+          method: get
           path: hello
