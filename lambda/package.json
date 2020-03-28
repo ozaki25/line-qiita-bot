@@ -13,6 +13,7 @@
   "dependencies": {
     "@line/bot-sdk": "^6.8.4",
     "aws-sdk": "^2.648.0",
+    "dayjs": "^1.8.23",
     "node-fetch": "^2.6.0",
     "source-map-support": "^0.5.10"
   },
