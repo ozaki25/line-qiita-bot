@@ -28,3 +28,5 @@ functions:
       - http:
           method: post
           path: hello
+  richmenu:
+    handler: handler.richmenu
