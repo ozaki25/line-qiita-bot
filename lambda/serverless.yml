@@ -53,12 +53,14 @@ functions:
       - http:
           method: post
           path: qiita
+      - schedule: cron(0 15 * * ? *)
   pushDailyLikeCount:
     handler: handler.pushDailyLikeCount
     events:
       - http:
           method: post
           path: push/daily
+      - schedule: cron(0 23 * * ? *)
 resources:
   Resources:
     User:
