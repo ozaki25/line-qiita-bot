@@ -75,7 +75,7 @@ resources:
         AttributeDefinitions:
           - AttributeName: userId
             AttributeType: S
-        - AttributeName: date
+          - AttributeName: date
             AttributeType: S
         KeySchema:
           - AttributeName: userId
