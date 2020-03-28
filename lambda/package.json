@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@line/bot-sdk": "^6.8.4",
+    "aws-sdk": "^2.648.0",
     "source-map-support": "^0.5.10"
   },
   "devDependencies": {
