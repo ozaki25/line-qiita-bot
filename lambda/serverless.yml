@@ -47,6 +47,14 @@ functions:
           path: users
     environment:
       USER_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-User
+  saveQiitaInfo:
+    handler: handler.saveQiitaInfo
+    events:
+      - http:
+          method: post
+          path: qiita
+    environment:
+      USER_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-User
 resources:
   Resources:
     User:
