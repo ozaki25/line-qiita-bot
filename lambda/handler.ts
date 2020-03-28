@@ -23,9 +23,11 @@ type MessageType = {
 
 export const receive: APIGatewayProxyHandler = async e => {
   const body: MessageType = JSON.parse(e.body);
+  if (!body || !body.events || !body.events.length) {
+    return { statusCode: 200, body: 'EMPTY' };
+  }
   body.events.map(async event => console.log(JSON.stringify(event)));
-  const event = body.events[0];
-  const { replyToken, source, message } = event;
+  const { replyToken, source, message } = body.events[0];
   try {
     // 返信として送信
     const replyResult = await reply({ replyToken, text: message.text });
