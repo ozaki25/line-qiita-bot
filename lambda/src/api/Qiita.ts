@@ -7,14 +7,14 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
-class QiitaApi {
-  async getItems({ userId }) {
-    const res = await fetch(`${url}/users/${userId}/items`, { headers });
-    const json = await res.json();
-    console.log(json);
-    if (!res.ok) throw new Error(json.message);
-    return json;
-  }
+async function getItems({ userId }) {
+  const res = await fetch(`${url}/users/${userId}/items`, { headers });
+  const json = await res.json();
+  console.log(json);
+  if (!res.ok) throw new Error(json.message);
+  return json;
 }
 
-export const qiitaApi = new QiitaApi();
+export const qiitaApi = {
+  getItems,
+};
