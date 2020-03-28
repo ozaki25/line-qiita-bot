@@ -39,6 +39,14 @@ functions:
       - http:
           method: post
           path: receive
+  addUser:
+    handler: handler.addUser
+    events:
+      - http:
+          method: post
+          path: users
+    environment:
+      USER_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-User
 resources:
   Resources:
     User:
@@ -46,10 +54,10 @@ resources:
       Properties:
         TableName: ${self:provider.environment.DYNAMODB_TABLE}-User
         AttributeDefinitions:
-          - AttributeName: id
+          - AttributeName: lineId
             AttributeType: S
         KeySchema:
-          - AttributeName: id
+          - AttributeName: lineId
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1

@@ -1,6 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import { reply, push } from './src/lineClient';
+import { userService } from './src/service/UserService';
 
 type MessageType = {
   events: {
@@ -38,6 +39,19 @@ export const receive: APIGatewayProxyHandler = async e => {
       text: message.text,
     });
     console.log({ pushResult });
+    return { statusCode: 200, body: 'OK' };
+  } catch (error) {
+    console.log(error.message);
+    return { statusCode: 500, body: 'NG' };
+  }
+};
+
+export const addUser: APIGatewayProxyHandler = async e => {
+  try {
+    console.log(e.body);
+    const body = JSON.parse(e.body);
+    const { lineId, qiitaId } = body;
+    await userService.put({ lineId, qiitaId });
     return { statusCode: 200, body: 'OK' };
   } catch (error) {
     console.log(error.message);
