@@ -22,6 +22,8 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     TZ: Asia/Tokyo
     DYNAMODB_TABLE: ${self:service.name}-${self:provider.stage}
+    USER_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-User
+    QIITA_HISTORY_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-QiitaHistory
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -45,28 +47,41 @@ functions:
       - http:
           method: post
           path: users
-    environment:
-      USER_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-User
   saveQiitaInfo:
     handler: handler.saveQiitaInfo
     events:
       - http:
           method: post
           path: qiita
-    environment:
-      USER_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-User
 resources:
   Resources:
     User:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}-User
+        TableName: ${self:provider.environment.USER_TABLE}
         AttributeDefinitions:
           - AttributeName: lineId
             AttributeType: S
         KeySchema:
           - AttributeName: lineId
             KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    QiitaHistory:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.QIITA_HISTORY_TABLE}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        - AttributeName: date
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: date
+            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
