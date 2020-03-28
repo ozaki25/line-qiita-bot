@@ -1,7 +1,10 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import 'source-map-support/register';
 import { reply, push } from './src/lineClient';
 import { userService } from './src/service/UserService';
+import { qiitaService } from './src/service/QiitaService';
+import { uniq } from './src/util/arrayUtil';
 
 type MessageType = {
   events: {
@@ -52,6 +55,25 @@ export const addUser: APIGatewayProxyHandler = async e => {
     const body = JSON.parse(e.body);
     const { lineId, qiitaId } = body;
     await userService.put({ lineId, qiitaId });
+    return { statusCode: 200, body: 'OK' };
+  } catch (error) {
+    console.log(error.message);
+    return { statusCode: 500, body: 'NG' };
+  }
+};
+
+export const saveQiitaInfo: APIGatewayProxyHandler = async () => {
+  try {
+    const result: DocumentClient.ScanOutput = await userService.scan();
+    console.log(JSON.stringify(result));
+
+    const qiitaIds = uniq(result.Items.map(({ qiitaId }) => qiitaId));
+    console.log({ qiitaIds });
+
+    await Promise.all(
+      qiitaIds.map(userId => qiitaService.saveItemInfo({ userId })),
+    );
+
     return { statusCode: 200, body: 'OK' };
   } catch (error) {
     console.log(error.message);
