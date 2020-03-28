@@ -1,6 +1,6 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
-import { reply, push, createRichmenu } from './src/lineClient';
+import { reply, push } from './src/lineClient';
 
 type MessageType = {
   events: {
@@ -39,17 +39,6 @@ export const hello: APIGatewayProxyHandler = async event => {
     return { statusCode: 200, body: 'OK' };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, body: 'NG' };
-  }
-};
-
-export const richmenu: APIGatewayProxyHandler = async event => {
-  try {
-    const result = await createRichmenu();
-    console.log({ result });
-    return { statusCode: 200, body: 'OK' };
-  } catch (error) {
-    console.dir({ error });
     return { statusCode: 500, body: 'NG' };
   }
 };
