@@ -8,7 +8,9 @@ const headers = {
 };
 
 async function getItems({ userId }) {
-  const res = await fetch(`${url}/users/${userId}/items`, { headers });
+  const res = await fetch(`${url}/users/${userId}/items?per_page=100`, {
+    headers,
+  });
   const json = await res.json();
   console.log(json);
   if (!res.ok) throw new Error(json.message);
