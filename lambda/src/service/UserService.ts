@@ -10,6 +10,11 @@ class UserService {
     this.dynamo = new DynamoDB.DocumentClient();
   }
 
+  scan() {
+    const params = { TableName: tableName };
+    return this.dynamo.scan(params).promise();
+  }
+
   put({ lineId, qiitaId }) {
     const params = {
       TableName: tableName,
