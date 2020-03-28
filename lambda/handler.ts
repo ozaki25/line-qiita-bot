@@ -21,21 +21,21 @@ type MessageType = {
   destination: string;
 };
 
-export const hello: APIGatewayProxyHandler = async event => {
-  const body: MessageType = JSON.parse(event.body);
-
+export const receive: APIGatewayProxyHandler = async e => {
+  const body: MessageType = JSON.parse(e.body);
   body.events.map(async event => console.log(JSON.stringify(event)));
-
+  const event = body.events[0];
+  const { replyToken, source, message } = event;
   try {
-    const replies = body.events.map(async ({ replyToken, message }) => {
-      return reply({ replyToken, text: message.text });
+    // 返信として送信
+    const replyResult = await reply({ replyToken, text: message.text });
+    console.log({ replyResult });
+    // プッシュメッセージとして送信
+    const pushResult = await push({
+      userId: source.userId,
+      text: message.text,
     });
-    const pushes = body.events.map(async ({ source, message }) => {
-      return push({ userId: source.userId, text: message.text });
-    });
-    const result = await Promise.all([...replies, ...pushes]);
-    console.log({ result });
-
+    console.log({ pushResult });
     return { statusCode: 200, body: 'OK' };
   } catch (error) {
     console.log(error.message);
