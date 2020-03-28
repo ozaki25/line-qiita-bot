@@ -53,6 +53,12 @@ functions:
       - http:
           method: post
           path: qiita
+  pushDailyLikeCount:
+    handler: handler.pushDailyLikeCount
+    events:
+      - http:
+          method: post
+          path: push/daily
 resources:
   Resources:
     User:
