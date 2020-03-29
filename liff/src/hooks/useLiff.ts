@@ -5,10 +5,17 @@ type Props = {
   liffId: string;
 };
 
+type Profile = {
+  userId: string;
+  displayName: string;
+  pictureUrl: string;
+  statusMessage?: string;
+};
+
 function useLiff({ liffId }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   const initLiff = async ({ liffId }: { liffId: string }) => {
     setLoading(true);
