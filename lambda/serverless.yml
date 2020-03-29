@@ -17,6 +17,7 @@ custom:
 plugins:
   - serverless-webpack
   - serverless-offline
+  - serverless-dotenv-plugin
 provider:
   name: aws
   runtime: nodejs12.x
@@ -31,6 +32,8 @@ provider:
     DYNAMODB_TABLE: ${self:service.name}-${self:provider.stage}
     USER_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-User
     QIITA_HISTORY_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-QiitaHistory
+    CHANNEL_ACCESS_TOKEN: ${env:CHANNEL_ACCESS_TOKEN}
+    QIITA_ACCESS_TOKEN: ${env:QIITA_ACCESS_TOKEN}
   iamRoleStatements:
     - Effect: Allow
       Action:
