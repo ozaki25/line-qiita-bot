@@ -6,6 +6,7 @@ import {
   Button,
   CSSReset,
   Text,
+  useToast,
 } from '@chakra-ui/core';
 import useLiff from './hooks/useLiff';
 import { userApi } from './api/UserApi';
@@ -22,12 +23,20 @@ function App() {
   const { loading, error, profile } = useLiff({ liffId });
   console.log({ loading, error, profile, liffId, current });
 
+  const successToast = useToast();
+  const errorToast = useToast();
+
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQiitaId(e.target.value);
   };
 
-  const onSubmit = () => {
-    userApi.postUser({ qiitaId, lineId });
+  const onSubmit = async () => {
+    try {
+      await userApi.postUser({ qiitaId, lineId });
+      showSuccessToast('登録が完了しました');
+    } catch (e) {
+      showErrorToast('登録に失敗しました');
+    }
   };
 
   const setupCurrentUser = async () => {
@@ -35,13 +44,27 @@ function App() {
     setCurrent(user);
   };
 
+  const showSuccessToast = (description: string) => {
+    successToast({
+      description,
+      status: 'success',
+    });
+  };
+
+  const showErrorToast = (description: string) => {
+    errorToast({
+      description,
+      status: 'error',
+    });
+  };
+
   useEffect(() => {
     if (profile) setLineId(profile.userId);
-  }, [profile, setLineId]);
+  }, [profile]);
 
   useEffect(() => {
     if (lineId) setupCurrentUser();
-  }, [lineId, setupCurrentUser]);
+  }, [lineId]);
 
   if (loading) return <p>...loading</p>;
   if (error) return <p>{error}</p>;
@@ -51,7 +74,7 @@ function App() {
       <CSSReset />
       <Box p={4}>
         {current ? (
-          <Text>現在登録されているQiitaのID: {current.qiitaId}</Text>
+          <Text>登録済みのQiitaのID: {current.qiitaId}</Text>
         ) : (
           <Text>QiitaのIDを登録してください</Text>
         )}
