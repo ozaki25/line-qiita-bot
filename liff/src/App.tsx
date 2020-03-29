@@ -1,13 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import {
-  ThemeProvider,
-  Box,
-  Input,
-  Button,
-  CSSReset,
-  Text,
-  useToast,
-} from '@chakra-ui/core';
+import { Box, Button, Input, Text, useToast } from '@chakra-ui/core';
 import useLiff from './hooks/useLiff';
 import { userApi } from './api/UserApi';
 
@@ -45,17 +37,11 @@ function App() {
   };
 
   const showSuccessToast = (description: string) => {
-    successToast({
-      description,
-      status: 'success',
-    });
+    successToast({ description, status: 'success' });
   };
 
   const showErrorToast = (description: string) => {
-    errorToast({
-      description,
-      status: 'error',
-    });
+    errorToast({ description, status: 'error' });
   };
 
   useEffect(() => {
@@ -70,20 +56,17 @@ function App() {
   if (error) return <p>{error}</p>;
 
   return (
-    <ThemeProvider>
-      <CSSReset />
-      <Box p={4}>
-        {current ? (
-          <Text>登録済みのQiitaのID: {current.qiitaId}</Text>
-        ) : (
-          <Text>QiitaのIDを登録してください</Text>
-        )}
-        <Input mb={4} value={qiitaId} onChange={onChange} />
-        <Button onClick={onSubmit} width="100%">
-          登録
-        </Button>
-      </Box>
-    </ThemeProvider>
+    <Box p={4}>
+      {current ? (
+        <Text>登録済みのQiitaのID: {current.qiitaId}</Text>
+      ) : (
+        <Text>QiitaのIDを登録してください</Text>
+      )}
+      <Input mb={4} value={qiitaId} onChange={onChange} />
+      <Button onClick={onSubmit} width="100%">
+        登録
+      </Button>
+    </Box>
   );
 }
 
