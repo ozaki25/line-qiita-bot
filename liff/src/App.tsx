@@ -1,10 +1,11 @@
 import React from 'react';
+import { ThemeProvider } from '@chakra-ui/core';
 
 function App() {
   return (
-    <div>
+    <ThemeProvider>
       <h1>Hello LIFF</h1>
-    </div>
+    </ThemeProvider>
   );
 }
 
