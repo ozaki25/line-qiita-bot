@@ -25,6 +25,7 @@ function App() {
   const onSubmit = async () => {
     try {
       await userApi.postUser({ qiitaId, lineId });
+      await setupCurrentUser();
       showSuccessToast('登録が完了しました');
     } catch (e) {
       showErrorToast('登録に失敗しました');
