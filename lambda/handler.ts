@@ -36,7 +36,11 @@ const responseHeders = {
 export const receive: APIGatewayProxyHandler = async e => {
   const body: MessageType = JSON.parse(e.body);
   if (!body || !body.events || !body.events.length) {
-    return { statusCode: 200, headers: responseHeders, body: 'EMPTY' };
+    return {
+      statusCode: 200,
+      headers: responseHeders,
+      body: JSON.stringify({ message: 'OK' }),
+    };
   }
   body.events.map(async event => console.log(JSON.stringify(event)));
   const { replyToken, source, message } = body.events[0];
@@ -50,10 +54,18 @@ export const receive: APIGatewayProxyHandler = async e => {
       text: message.text,
     });
     console.log({ pushResult });
-    return { statusCode: 200, headers: responseHeders, body: 'OK' };
+    return {
+      statusCode: 200,
+      headers: responseHeders,
+      body: JSON.stringify({ message: 'OK' }),
+    };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, headers: responseHeders, body: 'NG' };
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify({ message: error.message }),
+    };
   }
 };
 
@@ -63,10 +75,18 @@ export const addUser: APIGatewayProxyHandler = async e => {
     const body = JSON.parse(e.body);
     const { lineId, qiitaId } = body;
     await userService.put({ lineId, qiitaId });
-    return { statusCode: 200, headers: responseHeders, body: 'OK' };
+    return {
+      statusCode: 200,
+      headers: responseHeders,
+      body: JSON.stringify({ message: 'OK' }),
+    };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, headers: responseHeders, body: 'NG' };
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify({ message: error.message }),
+    };
   }
 };
 
@@ -82,7 +102,11 @@ export const getUser: APIGatewayProxyHandler = async e => {
     };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, headers: responseHeders, body: 'NG' };
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify({ message: error.message }),
+    };
   }
 };
 
@@ -98,10 +122,18 @@ export const saveQiitaInfo: APIGatewayProxyHandler = async () => {
       qiitaIds.map(userId => qiitaService.saveItemInfo({ userId })),
     );
 
-    return { statusCode: 200, headers: responseHeders, body: 'OK' };
+    return {
+      statusCode: 200,
+      headers: responseHeders,
+      body: JSON.stringify({ message: 'OK' }),
+    };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, headers: responseHeders, body: 'NG' };
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify({ message: error.message }),
+    };
   }
 };
 
@@ -120,9 +152,17 @@ export const pushDailyLikeCount: APIGatewayProxyHandler = async () => {
       ),
     );
 
-    return { statusCode: 200, headers: responseHeders, body: 'OK' };
+    return {
+      statusCode: 200,
+      headers: responseHeders,
+      body: JSON.stringify({ message: 'OK' }),
+    };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, headers: responseHeders, body: 'NG' };
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify({ message: error.message }),
+    };
   }
 };
