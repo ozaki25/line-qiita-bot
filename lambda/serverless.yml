@@ -7,6 +7,13 @@ custom:
     includeModules: true
   serverless-offline:
     httpPort: 8083
+  schedule:
+    saveQiitaInfo:
+      dev:
+      production: cron(0 15 * * ? *) # 毎日0時
+    pushDailyLikeCount:
+      dev:
+      production: cron(0 23 * * ? *) # 毎日8時
 plugins:
   - serverless-webpack
   - serverless-offline
@@ -53,14 +60,14 @@ functions:
       - http:
           method: post
           path: qiita
-      - schedule: cron(0 15 * * ? *)
+      - schedule: ${self:custom.schedule.saveQiitaInfo.${self:provider.stage}}
   pushDailyLikeCount:
     handler: handler.pushDailyLikeCount
     events:
       - http:
           method: post
           path: push/daily
-      - schedule: cron(0 23 * * ? *)
+      - schedule: ${self:custom.schedule.pushDailyLikeCount.${self:provider.stage}}
 resources:
   Resources:
     User:
