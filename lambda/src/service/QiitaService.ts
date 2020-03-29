@@ -5,8 +5,19 @@ import { push } from '../lineClient';
 
 async function getItems({ userId }) {
   try {
-    const result = await qiitaApi.getItems({ userId });
-    return result;
+    const user = await qiitaApi.getUser({ userId });
+    const itemCount = user.items_count;
+    const pageCount = Math.ceil(itemCount / 100);
+    const pageCountList = [...new Array(pageCount)].map((_, i) =>
+      String(i + 1),
+    );
+
+    let items = [];
+    for await (const page of pageCountList) {
+      const result = await qiitaApi.getItems({ userId, page });
+      if (result) items.push(...result);
+    }
+    return items;
   } catch (e) {
     return null;
   }
@@ -24,6 +35,9 @@ async function saveItemInfo({ userId }) {
     likeCount: item.likes_count,
   }));
   const total = items.reduce((prev, current) => prev + current.likeCount, 0);
+
+  console.log(JSON.stringify({ items, total }));
+
   await qiitaHistoryService.put({ userId, date, items, total });
 }
 

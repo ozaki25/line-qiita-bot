@@ -7,10 +7,23 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
-async function getItems({ userId }) {
-  const res = await fetch(`${url}/users/${userId}/items?per_page=100`, {
+async function getUser({ userId }) {
+  const res = await fetch(`${url}/users/${userId}`, {
     headers,
   });
+  const json = await res.json();
+  console.log(json);
+  if (!res.ok) throw new Error(json.message);
+  return json;
+}
+
+async function getItems({ userId, page }) {
+  const res = await fetch(
+    `${url}/users/${userId}/items?per_page=100&page=${page}`,
+    {
+      headers,
+    },
+  );
   const json = await res.json();
   // console.log(json);
   if (!res.ok) throw new Error(json.message);
@@ -18,5 +31,6 @@ async function getItems({ userId }) {
 }
 
 export const qiitaApi = {
+  getUser,
   getItems,
 };
