@@ -12,7 +12,7 @@ async function getItems({ userId }) {
     headers,
   });
   const json = await res.json();
-  console.log(json);
+  // console.log(json);
   if (!res.ok) throw new Error(json.message);
   return json;
 }
