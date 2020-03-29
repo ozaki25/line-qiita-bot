@@ -51,18 +51,21 @@ functions:
       - http:
           method: post
           path: receive
+          cors: true
   addUser:
     handler: handler.addUser
     events:
       - http:
           method: post
           path: users
+          cors: true
   getUser:
     handler: handler.getUser
     events:
       - http:
           method: get
           path: users
+          cors: true
           request:
             parameters:
               querystrings:
@@ -73,6 +76,7 @@ functions:
       - http:
           method: post
           path: qiita
+          cors: true
       - schedule: ${self:custom.schedule.saveQiitaInfo.${self:provider.stage}}
   pushDailyLikeCount:
     handler: handler.pushDailyLikeCount
@@ -80,6 +84,7 @@ functions:
       - http:
           method: post
           path: push/daily
+          cors: true
       - schedule: ${self:custom.schedule.pushDailyLikeCount.${self:provider.stage}}
 resources:
   Resources:

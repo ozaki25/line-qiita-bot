@@ -26,10 +26,17 @@ type MessageType = {
   destination: string;
 };
 
+const responseHeders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'Origin, X-Requested-With, Content-Type, Accept',
+  'Access-Control-Allow-Methods': '*',
+};
+
 export const receive: APIGatewayProxyHandler = async e => {
   const body: MessageType = JSON.parse(e.body);
   if (!body || !body.events || !body.events.length) {
-    return { statusCode: 200, body: 'EMPTY' };
+    return { statusCode: 200, headers: responseHeders, body: 'EMPTY' };
   }
   body.events.map(async event => console.log(JSON.stringify(event)));
   const { replyToken, source, message } = body.events[0];
@@ -43,10 +50,10 @@ export const receive: APIGatewayProxyHandler = async e => {
       text: message.text,
     });
     console.log({ pushResult });
-    return { statusCode: 200, body: 'OK' };
+    return { statusCode: 200, headers: responseHeders, body: 'OK' };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, body: 'NG' };
+    return { statusCode: 500, headers: responseHeders, body: 'NG' };
   }
 };
 
@@ -56,10 +63,10 @@ export const addUser: APIGatewayProxyHandler = async e => {
     const body = JSON.parse(e.body);
     const { lineId, qiitaId } = body;
     await userService.put({ lineId, qiitaId });
-    return { statusCode: 200, body: 'OK' };
+    return { statusCode: 200, headers: responseHeders, body: 'OK' };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, body: 'NG' };
+    return { statusCode: 500, headers: responseHeders, body: 'NG' };
   }
 };
 
@@ -68,10 +75,14 @@ export const getUser: APIGatewayProxyHandler = async e => {
     console.log(e.queryStringParameters);
     const { lineId } = e.queryStringParameters;
     const { Item } = await userService.findByLineId({ lineId });
-    return { statusCode: 200, body: JSON.stringify(Item) };
+    return {
+      statusCode: 200,
+      headers: responseHeders,
+      body: JSON.stringify(Item),
+    };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, body: 'NG' };
+    return { statusCode: 500, headers: responseHeders, body: 'NG' };
   }
 };
 
@@ -87,10 +98,10 @@ export const saveQiitaInfo: APIGatewayProxyHandler = async () => {
       qiitaIds.map(userId => qiitaService.saveItemInfo({ userId })),
     );
 
-    return { statusCode: 200, body: 'OK' };
+    return { statusCode: 200, headers: responseHeders, body: 'OK' };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, body: 'NG' };
+    return { statusCode: 500, headers: responseHeders, body: 'NG' };
   }
 };
 
@@ -109,9 +120,9 @@ export const pushDailyLikeCount: APIGatewayProxyHandler = async () => {
       ),
     );
 
-    return { statusCode: 200, body: 'OK' };
+    return { statusCode: 200, headers: responseHeders, body: 'OK' };
   } catch (error) {
     console.log(error.message);
-    return { statusCode: 500, body: 'NG' };
+    return { statusCode: 500, headers: responseHeders, body: 'NG' };
   }
 };
