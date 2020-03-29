@@ -9,6 +9,11 @@ function scan() {
   return dynamo.scan(params).promise();
 }
 
+function findByLineId({ lineId }) {
+  const params = { TableName: tableName, Key: { lineId } };
+  return dynamo.get(params).promise();
+}
+
 function put({ lineId, qiitaId }) {
   const params = {
     TableName: tableName,
@@ -19,5 +24,6 @@ function put({ lineId, qiitaId }) {
 
 export const userService = {
   scan,
+  findByLineId,
   put,
 };

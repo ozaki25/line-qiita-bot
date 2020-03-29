@@ -57,6 +57,16 @@ functions:
       - http:
           method: post
           path: users
+  getUser:
+    handler: handler.getUser
+    events:
+      - http:
+          method: get
+          path: users
+          request:
+            parameters:
+              querystrings:
+                lineId: true
   saveQiitaInfo:
     handler: handler.saveQiitaInfo
     events:

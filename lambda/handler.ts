@@ -63,6 +63,18 @@ export const addUser: APIGatewayProxyHandler = async e => {
   }
 };
 
+export const getUser: APIGatewayProxyHandler = async e => {
+  try {
+    console.log(e.queryStringParameters);
+    const { lineId } = e.queryStringParameters;
+    const { Item } = await userService.findByLineId({ lineId });
+    return { statusCode: 200, body: JSON.stringify(Item) };
+  } catch (error) {
+    console.log(error.message);
+    return { statusCode: 500, body: 'NG' };
+  }
+};
+
 export const saveQiitaInfo: APIGatewayProxyHandler = async () => {
   try {
     const users: DocumentClient.ScanOutput = await userService.scan();
