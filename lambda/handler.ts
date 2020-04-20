@@ -7,66 +7,11 @@ import { userService } from './src/service/UserService';
 import { qiitaService } from './src/service/QiitaService';
 import { uniq } from './src/util/arrayUtil';
 
-type MessageType = {
-  events: {
-    type: string;
-    replyToken: string;
-    source: {
-      userId: string;
-      type: string;
-    };
-    timestamp: number;
-    mode: string;
-    message: {
-      type: string;
-      id: string;
-      text: string;
-    };
-  }[];
-  destination: string;
-};
-
 const responseHeders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers':
     'Origin, X-Requested-With, Content-Type, Accept',
   'Access-Control-Allow-Methods': '*',
-};
-
-export const receive: APIGatewayProxyHandler = async e => {
-  const body: MessageType = JSON.parse(e.body);
-  if (!body || !body.events || !body.events.length) {
-    return {
-      statusCode: 200,
-      headers: responseHeders,
-      body: JSON.stringify({ message: 'OK' }),
-    };
-  }
-  body.events.map(async event => console.log(JSON.stringify(event)));
-  const { replyToken, source, message } = body.events[0];
-  try {
-    // 返信として送信
-    const replyResult = await reply({ replyToken, text: message.text });
-    console.log({ replyResult });
-    // プッシュメッセージとして送信
-    const pushResult = await push({
-      userId: source.userId,
-      text: message.text,
-    });
-    console.log({ pushResult });
-    return {
-      statusCode: 200,
-      headers: responseHeders,
-      body: JSON.stringify({ message: 'OK' }),
-    };
-  } catch (error) {
-    console.log(error.message);
-    return {
-      statusCode: 500,
-      headers: responseHeders,
-      body: JSON.stringify({ message: error.message }),
-    };
-  }
 };
 
 export const addUser: APIGatewayProxyHandler = async e => {

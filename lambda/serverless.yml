@@ -45,13 +45,6 @@ provider:
         - dynamodb:DeleteItem
       Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*'
 functions:
-  receive:
-    handler: handler.receive
-    events:
-      - http:
-          method: post
-          path: receive
-          cors: true
   addUser:
     handler: handler.addUser
     events:
@@ -73,18 +66,10 @@ functions:
   saveQiitaInfo:
     handler: handler.saveQiitaInfo
     events:
-      - http:
-          method: post
-          path: qiita
-          cors: true
       - schedule: ${self:custom.schedule.saveQiitaInfo.${self:provider.stage}}
   pushDailyLikeCount:
     handler: handler.pushDailyLikeCount
     events:
-      - http:
-          method: post
-          path: push/daily
-          cors: true
       - schedule: ${self:custom.schedule.pushDailyLikeCount.${self:provider.stage}}
 resources:
   Resources:
