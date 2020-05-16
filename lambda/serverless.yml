@@ -34,6 +34,7 @@ provider:
     TZ: Asia/Tokyo
     LAYER_NAME: ${self:service.name}-${self:provider.stage}
     LAMBDA_NAME: ${self:service.name}-${self:provider.stage}
+    S3_BUCKET: ${self:service.name}-${self:provider.stage}
     DYNAMODB_TABLE: ${self:service.name}-${self:provider.stage}
     USER_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-User
     QIITA_HISTORY_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-QiitaHistory
@@ -43,17 +44,23 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*
+        - 'dynamodb:Query'
+        - 'dynamodb:Scan'
+        - 'dynamodb:GetItem'
+        - 'dynamodb:PutItem'
+        - 'dynamodb:UpdateItem'
+        - 'dynamodb:DeleteItem'
+      Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*'
     - Effect: Allow
       Action:
-        - lambda:InvokeFunction
-      Resource: arn:aws:lambda:${self:provider.region}:*:function:${self:provider.environment.LAMBDA_NAME}*
+        - 'lambda:InvokeFunction'
+      Resource: 'arn:aws:lambda:${self:provider.region}:*:function:${self:provider.environment.LAMBDA_NAME}*'
+    - Effect: Allow
+      Action:
+        - 's3:PutObject'
+        - 's3:PutObjectAcl'
+        - 's3:GetObject'
+      Resource: 'arn:aws:s3:::${self:provider.environment.S3_BUCKET}*'
 functions:
   addUser:
     handler: handler.addUser
@@ -125,3 +132,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    Capture:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.S3_BUCKET}
