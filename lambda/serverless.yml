@@ -41,6 +41,7 @@ provider:
     CHANNEL_ACCESS_TOKEN: ${env:CHANNEL_ACCESS_TOKEN}
     QIITA_ACCESS_TOKEN: ${env:QIITA_ACCESS_TOKEN}
     GET_CAPTURE_FUNCTION: ${self:service.name}-${self:provider.stage}-getCapture
+    CAPTURE_PAGE_URL: ${env:CAPTURE_PAGE_URL}
   iamRoleStatements:
     - Effect: Allow
       Action:
