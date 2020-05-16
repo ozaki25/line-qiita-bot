@@ -32,11 +32,13 @@ provider:
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     TZ: Asia/Tokyo
+    LAMBDA_NAME: ${self:service.name}-${self:provider.stage}
     DYNAMODB_TABLE: ${self:service.name}-${self:provider.stage}
     USER_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-User
     QIITA_HISTORY_TABLE: ${self:provider.environment.DYNAMODB_TABLE}-QiitaHistory
     CHANNEL_ACCESS_TOKEN: ${env:CHANNEL_ACCESS_TOKEN}
     QIITA_ACCESS_TOKEN: ${env:QIITA_ACCESS_TOKEN}
+    GET_CAPTURE_FUNCTION: ${self:service.name}-${self:provider.stage}-getCapture
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -46,7 +48,11 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*'
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: arn:aws:lambda:${self:provider.region}:*:function:${self:provider.environment.LAMBDA_NAME}*
 functions:
   addUser:
     handler: handler.addUser
@@ -78,6 +84,8 @@ functions:
     handler: handler.pushWeeklyLikeCount
     events:
       - schedule: ${self:custom.schedule.pushWeeklyLikeCount.${self:provider.stage}}
+  getCapture:
+    handler: handler.getCapture
 resources:
   Resources:
     User:
