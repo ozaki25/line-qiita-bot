@@ -2,9 +2,10 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import * as dayjs from 'dayjs';
 import 'source-map-support/register';
-import { push } from './src/api/LineApi';
+import { pushText, pushImage } from './src/api/LineApi';
 import { userService } from './src/service/UserService';
 import { qiitaService } from './src/service/QiitaService';
+import { captureService } from './src/service/CaptureService';
 import { uniq } from './src/util/arrayUtil';
 
 const responseHeders = {
@@ -69,14 +70,12 @@ export const saveQiitaInfo: APIGatewayProxyHandler = async () => {
 
     return {
       statusCode: 200,
-      headers: responseHeders,
       body: JSON.stringify({ message: 'OK' }),
     };
   } catch (error) {
     console.log(error.message);
     return {
       statusCode: 500,
-      headers: responseHeders,
       body: JSON.stringify({ message: error.message }),
     };
   }
@@ -106,20 +105,18 @@ export const pushDailyLikeCount: APIGatewayProxyHandler = async () => {
           start === null && end !== null
             ? `初回登録が完了しました。明日から通知が始まります！`
             : `${date}のいいね数は${count}件でした！`;
-        await push({ userId, text });
+        await pushText({ userId, text });
       }),
     );
 
     return {
       statusCode: 200,
-      headers: responseHeders,
       body: JSON.stringify({ message: 'OK' }),
     };
   } catch (error) {
     console.log(error.message);
     return {
       statusCode: 500,
-      headers: responseHeders,
       body: JSON.stringify({ message: error.message }),
     };
   }
@@ -144,20 +141,46 @@ export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
         if (start === null || end === null) return null;
         const userId = lineId;
         const text = `先週のいいね数は${count}件でした！`;
-        await push({ userId, text });
+        await pushText({ userId, text });
+        const result = await captureService.invoke({
+          url: 'https://github.com/ozaki25',
+        });
+        console.log({ result });
+        await pushImage({
+          userId,
+          imageUrl:
+            'https://qiita-image-store.s3.amazonaws.com/0/175213/profile-images/1491825881',
+        });
       }),
     );
 
     return {
       statusCode: 200,
-      headers: responseHeders,
       body: JSON.stringify({ message: 'OK' }),
     };
   } catch (error) {
     console.log(error.message);
     return {
       statusCode: 500,
-      headers: responseHeders,
+      body: JSON.stringify({ message: error.message }),
+    };
+  }
+};
+
+export const getCapture = async event => {
+  console.log(JSON.stringify(event));
+  const { url } = event;
+  const image = await captureService.excute({ url });
+  console.log({ image });
+  try {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'OK' }),
+    };
+  } catch (error) {
+    console.log(error.message);
+    return {
+      statusCode: 500,
       body: JSON.stringify({ message: error.message }),
     };
   }
