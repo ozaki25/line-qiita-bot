@@ -142,15 +142,17 @@ export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
         const userId = lineId;
         const text = `先週のいいね数は${count}件でした！`;
         await pushText({ userId, text });
-        const result = await captureService.invoke({
-          url: 'https://github.com/ozaki25',
+
+        const contributions = await qiitaService.getLikeCounts({
+          qiitaId,
+          startDate,
+          endDate,
         });
-        console.log({ result });
-        await pushImage({
-          userId,
-          imageUrl:
-            'https://qiita-image-store.s3.amazonaws.com/0/175213/profile-images/1491825881',
-        });
+        const url = captureService.getCapturePageUrl(qiitaId, contributions);
+        const { Payload } = await captureService.invoke({ url });
+        console.log({ Payload });
+        const imageUrl = JSON.parse(String(Payload)).body;
+        await pushImage({ userId, imageUrl });
       }),
     );
 
@@ -167,15 +169,17 @@ export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
   }
 };
 
-export const getCapture = async event => {
-  console.log(JSON.stringify(event));
-  const { url } = event;
-  const image = await captureService.excute({ url });
-  console.log({ image });
+export const getCapture = async (event: { url: string }) => {
   try {
+    console.log(JSON.stringify(event));
+    const { url } = event;
+    const image = await captureService.excute({ url });
+    console.log({ image });
+    const result = await captureService.save({ data: image });
+    console.log({ result });
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'OK' }),
+      body: result,
     };
   } catch (error) {
     console.log(error.message);
