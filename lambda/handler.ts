@@ -84,17 +84,30 @@ export const saveQiitaInfo: APIGatewayProxyHandler = async () => {
 
 export const pushDailyLikeCount: APIGatewayProxyHandler = async () => {
   try {
-    const startDate = dayjs()
-      .subtract(1, 'day')
-      .format('YYYY-MM-DD');
-    const endDate = dayjs().format('YYYY-MM-DD');
+    const base = dayjs();
+    const startDate = base.subtract(1, 'day').format('YYYY-MM-DD');
+    const endDate = base.format('YYYY-MM-DD');
     const users: DocumentClient.ScanOutput = await userService.scan();
     console.log(JSON.stringify(users));
 
     await Promise.all(
-      users.Items.map(({ lineId, qiitaId }) =>
-        qiitaService.pushLikeCount({ lineId, qiitaId, startDate, endDate }),
-      ),
+      users.Items.map(async ({ lineId, qiitaId }) => {
+        const { count, start, end } = await qiitaService.getLikeCount({
+          qiitaId,
+          startDate,
+          endDate,
+        });
+        // 当日分のデータがなければ対象外
+        if (end === null) return null;
+
+        const userId = lineId;
+        const date = base.subtract(1, 'day').format('YYYY/MM/DD');
+        const text =
+          start === null && end !== null
+            ? `初回登録が完了しました。明日から通知が始まります！`
+            : `${date}のいいね数は${count}件でした！`;
+        await push({ userId, text });
+      }),
     );
 
     return {

@@ -1,7 +1,6 @@
 import * as dayjs from 'dayjs';
 import { qiitaApi } from '../api/QiitaApi';
 import { qiitaHistoryService } from './QiitaHistoryService';
-import { push } from '../lineClient';
 
 async function getItems({ userId }) {
   try {
@@ -41,37 +40,27 @@ async function saveItemInfo({ userId }) {
   await qiitaHistoryService.put({ userId, date, items, total });
 }
 
-async function pushLikeCount({ lineId, qiitaId, startDate, endDate }) {
+async function getLikeCount({ qiitaId, startDate, endDate }) {
   try {
-    const startDateHistory = await qiitaHistoryService.findByUserIdAndDate({
+    const {
+      Item: startDateHistory,
+    } = await qiitaHistoryService.findByUserIdAndDate({
       userId: qiitaId,
       date: startDate,
     });
-    const endDateHistory = await qiitaHistoryService.findByUserIdAndDate({
+    const {
+      Item: endDateHistory,
+    } = await qiitaHistoryService.findByUserIdAndDate({
       userId: qiitaId,
       date: endDate,
     });
-
     console.log(JSON.stringify({ startDateHistory, endDateHistory }));
 
-    // 当日分がなかったら対象外
-    if (!endDateHistory.Item) return null;
-
-    // 登録初日を想定(使い方によってはそれ以外も入ってしまうけど、、)
-    if (!startDateHistory.Item && endDateHistory.Item) {
-      await push({
-        userId: lineId,
-        text: `初回登録が完了しました。明日から通知が始まります！`,
-      });
-      return;
-    }
-
-    const count = endDateHistory.Item.total - startDateHistory.Item.total;
-    await push({
-      userId: lineId,
-      text: `${endDate}のいいね数は${count}件でした！`,
-    });
-    return;
+    const start = startDateHistory ? startDateHistory.total : null;
+    const end = endDateHistory ? endDateHistory.total : null;
+    const count = Number.isNaN(end - start) ? null : end - start;
+    console.log({ start, end, count });
+    return { start, end, count };
   } catch (e) {
     console.log(e);
     return null;
@@ -81,5 +70,5 @@ async function pushLikeCount({ lineId, qiitaId, startDate, endDate }) {
 export const qiitaService = {
   getItems,
   saveItemInfo,
-  pushLikeCount,
+  getLikeCount,
 };
