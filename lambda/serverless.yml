@@ -14,6 +14,9 @@ custom:
     pushDailyLikeCount:
       dev:
       production: cron(0 23 * * ? *) # 毎日8時
+    pushWeeklyLikeCount:
+      dev:
+      production: cron(0 23 ? * SAT *) # 日曜8時
 plugins:
   - serverless-webpack
   - serverless-offline
@@ -71,6 +74,10 @@ functions:
     handler: handler.pushDailyLikeCount
     events:
       - schedule: ${self:custom.schedule.pushDailyLikeCount.${self:provider.stage}}
+  pushWeeklyLikeCount:
+    handler: handler.pushWeeklyLikeCount
+    events:
+      - schedule: ${self:custom.schedule.pushWeeklyLikeCount.${self:provider.stage}}
 resources:
   Resources:
     User:

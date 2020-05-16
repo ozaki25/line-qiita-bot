@@ -7,9 +7,11 @@ const lineClient = channelAccessToken
   : null;
 
 export function reply({ text, replyToken }) {
+  console.log({ text, replyToken });
   return lineClient.replyMessage(replyToken, [{ type: 'text', text }]);
 }
 
 export function push({ userId, text }) {
+  console.log({ userId, text });
   return lineClient.pushMessage(userId, [{ type: 'text', text }]);
 }

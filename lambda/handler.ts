@@ -124,3 +124,41 @@ export const pushDailyLikeCount: APIGatewayProxyHandler = async () => {
     };
   }
 };
+
+export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
+  try {
+    const base = dayjs();
+    const startDate = base.subtract(7, 'day').format('YYYY-MM-DD');
+    const endDate = base.format('YYYY-MM-DD');
+    const users: DocumentClient.ScanOutput = await userService.scan();
+    console.log(JSON.stringify(users));
+
+    await Promise.all(
+      users.Items.map(async ({ lineId, qiitaId }) => {
+        const { count, start, end } = await qiitaService.getLikeCount({
+          qiitaId,
+          startDate,
+          endDate,
+        });
+        // 一週間前か当日のどちらか片方でもデータがなければ対象外
+        if (start === null || end === null) return null;
+        const userId = lineId;
+        const text = `先週のいいね数は${count}件でした！`;
+        await push({ userId, text });
+      }),
+    );
+
+    return {
+      statusCode: 200,
+      headers: responseHeders,
+      body: JSON.stringify({ message: 'OK' }),
+    };
+  } catch (error) {
+    console.log(error.message);
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify({ message: error.message }),
+    };
+  }
+};
