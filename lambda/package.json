@@ -8,12 +8,16 @@
     "invoke:local": "sls invoke local -f",
     "invoke:aws": "sls invoke -f",
     "deploy": "sls deploy",
-    "deploy:prod": "sls deploy --stage production"
+    "deploy:prod": "sls deploy --stage production",
+    "predeploy": "yarn --cwd ./src/layers/nodejs",
+    "predeploy:prod": "yarn --cwd ./src/layers/nodejs"
   },
   "dependencies": {
     "@line/bot-sdk": "^6.8.4",
+    "chrome-aws-lambda": "^3.0.4",
     "dayjs": "^1.8.23",
     "node-fetch": "^2.6.0",
+    "puppeteer-core": "^3.0.4",
     "source-map-support": "^0.5.10"
   },
   "devDependencies": {
@@ -22,6 +26,7 @@
     "@types/node-fetch": "^2.5.5",
     "aws-sdk": "^2.658.0",
     "fork-ts-checker-webpack-plugin": "^3.0.1",
+    "puppeteer": "^3.0.4",
     "serverless-dotenv-plugin": "^2.3.2",
     "serverless-dynamodb-local": "^0.2.39",
     "serverless-offline": "^6.0.0-alpha.67",
