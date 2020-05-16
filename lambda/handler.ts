@@ -2,7 +2,7 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import * as dayjs from 'dayjs';
 import 'source-map-support/register';
-import { reply, push } from './src/lineClient';
+import { push } from './src/api/LineApi';
 import { userService } from './src/service/UserService';
 import { qiitaService } from './src/service/QiitaService';
 import { uniq } from './src/util/arrayUtil';
