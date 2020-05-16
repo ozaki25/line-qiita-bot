@@ -67,8 +67,31 @@ async function getLikeCount({ qiitaId, startDate, endDate }) {
   }
 }
 
+async function getLikeCounts({ qiitaId, startDate, endDate }) {
+  try {
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
+    const count = end.diff(start, 'day');
+    const result = await Promise.all(
+      [...Array(count)].map(async (_, i) => {
+        const { count } = await getLikeCount({
+          qiitaId,
+          startDate: start.add(i, 'day').format('YYYY-MM-DD'),
+          endDate: start.add(i + 1, 'day').format('YYYY-MM-DD'),
+        });
+        return count;
+      }),
+    );
+    return result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+
 export const qiitaService = {
   getItems,
   saveItemInfo,
   getLikeCount,
+  getLikeCounts,
 };
