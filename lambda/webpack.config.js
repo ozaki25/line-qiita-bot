@@ -1,5 +1,6 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
+const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   context: __dirname,
@@ -19,7 +20,7 @@ module.exports = {
     filename: '[name].js',
   },
   target: 'node',
-  externals: ['chrome-aws-lambda', 'sharp', 'aws-sdk'],
+  externals: [nodeExternals()],
   module: {
     rules: [
       {

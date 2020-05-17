@@ -68,7 +68,7 @@ functions:
           path: users
           cors: true
     layers:
-      - { Ref: GetCaptureLambdaLayer }
+      - { Ref: LineQiitaBotLambdaLayer }
   getUser:
     handler: handler.getUser
     events:
@@ -81,31 +81,33 @@ functions:
               querystrings:
                 lineId: true
     layers:
-      - { Ref: GetCaptureLambdaLayer }
+      - { Ref: LineQiitaBotLambdaLayer }
   saveQiitaInfo:
     handler: handler.saveQiitaInfo
     events:
       - schedule: ${self:custom.schedule.saveQiitaInfo.${self:provider.stage}}
     layers:
-      - { Ref: GetCaptureLambdaLayer }
+      - { Ref: LineQiitaBotLambdaLayer }
   pushDailyLikeCount:
     handler: handler.pushDailyLikeCount
     events:
       - schedule: ${self:custom.schedule.pushDailyLikeCount.${self:provider.stage}}
     layers:
-      - { Ref: GetCaptureLambdaLayer }
+      - { Ref: LineQiitaBotLambdaLayer }
   pushWeeklyLikeCount:
     handler: handler.pushWeeklyLikeCount
+    timeout: 60
     events:
       - schedule: ${self:custom.schedule.pushWeeklyLikeCount.${self:provider.stage}}
     layers:
-      - { Ref: GetCaptureLambdaLayer }
+      - { Ref: LineQiitaBotLambdaLayer }
   getCapture:
     handler: handler.getCapture
+    timeout: 20
     layers:
-      - { Ref: GetCaptureLambdaLayer }
+      - { Ref: LineQiitaBotLambdaLayer }
 layers:
-  getCapture:
+  lineQiitaBot:
     path: src/layers
     name: ${self:provider.environment.LAYER_NAME}
 resources:
