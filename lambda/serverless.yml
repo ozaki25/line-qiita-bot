@@ -2,9 +2,6 @@ service:
   name: line-qiita-bot
 custom:
   defaultStage: dev
-  webpack:
-    webpackConfig: ./webpack.config.js
-    includeModules: true
   serverless-offline:
     httpPort: 8083
   schedule:
