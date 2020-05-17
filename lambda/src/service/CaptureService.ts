@@ -45,13 +45,15 @@ async function excute({ url }) {
     ignoreHTTPSErrors: true,
   });
   const page = await browser.newPage();
-  await page.setViewport({
-    width: 720,
-    height: 100,
-    deviceScaleFactor: 1,
-  });
   await page.goto(url);
-  return await page.screenshot();
+  return await page.screenshot({
+    clip: {
+      x: 110,
+      y: 10,
+      width: 574,
+      height: 82,
+    },
+  });
 }
 
 async function save({ data }) {
