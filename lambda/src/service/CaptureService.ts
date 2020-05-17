@@ -6,6 +6,7 @@ import {
   headless,
   puppeteer,
 } from 'chrome-aws-lambda';
+import sharp from 'sharp';
 
 const lambda = new Lambda();
 const s3 = new S3();
@@ -56,6 +57,15 @@ async function excute({ url }) {
   });
 }
 
+async function getThumbnail({ image }) {
+  return await sharp(image)
+    .resize(250, 120, {
+      fit: 'contain',
+      background: '#b0bec5',
+    })
+    .toBuffer();
+}
+
 async function save({ data }) {
   const name = `${Date.now()}.png`;
   const params = {
@@ -75,4 +85,5 @@ export const captureService = {
   excute,
   save,
   getCapturePageUrl,
+  getThumbnail,
 };

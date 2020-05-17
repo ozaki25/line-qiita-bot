@@ -141,7 +141,6 @@ export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
         if (start === null || end === null) return null;
         const userId = lineId;
         const text = `先週のいいね数は${count}件でした！`;
-        await pushText({ userId, text });
 
         const contributions = await qiitaService.getLikeCounts({
           qiitaId,
@@ -151,8 +150,10 @@ export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
         const url = captureService.getCapturePageUrl(qiitaId, contributions);
         const { Payload } = await captureService.invoke({ url });
         console.log({ Payload });
-        const imageUrl = JSON.parse(String(Payload)).body;
-        await pushImage({ userId, imageUrl });
+        const { imageUrl, thumbnailUrl } = JSON.parse(String(Payload)).body;
+
+        await pushText({ userId, text });
+        await pushImage({ userId, imageUrl, thumbnailUrl });
       }),
     );
 
@@ -175,11 +176,14 @@ export const getCapture = async (event: { url: string }) => {
     const { url } = event;
     const image = await captureService.excute({ url });
     console.log({ image });
-    const result = await captureService.save({ data: image });
-    console.log({ result });
+    const thumbnail = await captureService.getThumbnail({ image });
+    console.log({ thumbnail });
+    const imageUrl = await captureService.save({ data: image });
+    const thumbnailUrl = await captureService.save({ data: thumbnail });
+    console.log({ imageUrl, thumbnailUrl });
     return {
       statusCode: 200,
-      body: result,
+      body: { imageUrl, thumbnailUrl },
     };
   } catch (error) {
     console.log(error.message);

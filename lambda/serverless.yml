@@ -67,6 +67,8 @@ functions:
           method: post
           path: users
           cors: true
+    layers:
+      - { Ref: GetCaptureLambdaLayer }
   getUser:
     handler: handler.getUser
     events:
@@ -78,18 +80,26 @@ functions:
             parameters:
               querystrings:
                 lineId: true
+    layers:
+      - { Ref: GetCaptureLambdaLayer }
   saveQiitaInfo:
     handler: handler.saveQiitaInfo
     events:
       - schedule: ${self:custom.schedule.saveQiitaInfo.${self:provider.stage}}
+    layers:
+      - { Ref: GetCaptureLambdaLayer }
   pushDailyLikeCount:
     handler: handler.pushDailyLikeCount
     events:
       - schedule: ${self:custom.schedule.pushDailyLikeCount.${self:provider.stage}}
+    layers:
+      - { Ref: GetCaptureLambdaLayer }
   pushWeeklyLikeCount:
     handler: handler.pushWeeklyLikeCount
     events:
       - schedule: ${self:custom.schedule.pushWeeklyLikeCount.${self:provider.stage}}
+    layers:
+      - { Ref: GetCaptureLambdaLayer }
   getCapture:
     handler: handler.getCapture
     layers:
