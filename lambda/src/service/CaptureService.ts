@@ -6,6 +6,7 @@ import {
   headless,
   puppeteer,
 } from 'chrome-aws-lambda';
+import sharp from 'sharp';
 
 const lambda = new Lambda();
 const s3 = new S3();
@@ -45,13 +46,24 @@ async function excute({ url }) {
     ignoreHTTPSErrors: true,
   });
   const page = await browser.newPage();
-  await page.setViewport({
-    width: 720,
-    height: 100,
-    deviceScaleFactor: 1,
-  });
   await page.goto(url);
-  return await page.screenshot();
+  return await page.screenshot({
+    clip: {
+      x: 110,
+      y: 10,
+      width: 574,
+      height: 82,
+    },
+  });
+}
+
+async function getThumbnail({ image }) {
+  return await sharp(image)
+    .resize(250, 120, {
+      fit: 'contain',
+      background: '#b0bec5',
+    })
+    .toBuffer();
 }
 
 async function save({ data }) {
@@ -73,4 +85,5 @@ export const captureService = {
   excute,
   save,
   getCapturePageUrl,
+  getThumbnail,
 };

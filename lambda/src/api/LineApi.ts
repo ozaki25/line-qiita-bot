@@ -16,9 +16,13 @@ export function pushText({ userId, text }) {
   return lineClient.pushMessage(userId, [{ type: 'text', text }]);
 }
 
-export function pushImage({ userId, imageUrl }) {
-  console.log({ userId, imageUrl });
+export function pushImage({ userId, imageUrl, thumbnailUrl }) {
+  console.log({ userId, imageUrl, thumbnailUrl });
   return lineClient.pushMessage(userId, [
-    { type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl },
+    {
+      type: 'image',
+      originalContentUrl: imageUrl,
+      previewImageUrl: thumbnailUrl,
+    },
   ]);
 }
