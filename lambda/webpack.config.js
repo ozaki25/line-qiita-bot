@@ -19,7 +19,7 @@ module.exports = {
     filename: '[name].js',
   },
   target: 'node',
-  externals: ['chrome-aws-lambda', 'aws-sdk'],
+  externals: ['chrome-aws-lambda', 'sharp', 'aws-sdk'],
   module: {
     rules: [
       {
