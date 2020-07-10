@@ -13,13 +13,13 @@
     "predeploy:prod": "yarn --cwd ./src/layers/nodejs && npm i --prefix=./src/layers/nodejs --arch=x64 --platform=linux sharp"
   },
   "dependencies": {
-    "@line/bot-sdk": "^6.8.4",
-    "chrome-aws-lambda": "^3.0.4",
-    "dayjs": "^1.8.23",
+    "@line/bot-sdk": "^7.0.0",
+    "chrome-aws-lambda": "^3.1.1",
+    "dayjs": "^1.8.29",
     "node-fetch": "^2.6.0",
-    "puppeteer-core": "^3.0.4",
-    "sharp": "^0.25.2",
-    "source-map-support": "^0.5.10"
+    "puppeteer-core": "^5.0.0",
+    "sharp": "^0.25.4",
+    "source-map-support": "^0.5.19"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
