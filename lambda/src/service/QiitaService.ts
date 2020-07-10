@@ -48,9 +48,9 @@ async function getLikeCount(
   } = await qiitaHistoryRepository.findByUserIdAndDate(qiitaId, endDate);
   console.log(JSON.stringify({ startDateHistory, endDateHistory }));
 
-  const start: number = startDateHistory ? startDateHistory.total : null;
-  const end: number = endDateHistory ? endDateHistory.total : null;
-  const count = Number.isNaN(end - start) ? 0 : end - start;
+  const start: number | null = startDateHistory ? startDateHistory.total : null;
+  const end: number | null = endDateHistory ? endDateHistory.total : null;
+  const count = start === null || end === null ? 0 : end - start;
   console.log({ start, end, count });
   return { start, end, count };
 }
