@@ -22,19 +22,19 @@
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.17",
-    "@types/node": "^10.12.18",
-    "@types/node-fetch": "^2.5.5",
-    "aws-sdk": "^2.658.0",
-    "puppeteer": "^3.0.4",
-    "serverless-dotenv-plugin": "^2.3.2",
+    "@types/aws-lambda": "^8.10.59",
+    "@types/node": "^14.0.22",
+    "@types/node-fetch": "^2.5.7",
+    "aws-sdk": "^2.713.0",
+    "puppeteer": "^5.0.0",
+    "serverless-dotenv-plugin": "^2.4.2",
     "serverless-dynamodb-local": "^0.2.39",
-    "serverless-offline": "^6.0.0-alpha.67",
-    "serverless-webpack": "^5.2.0",
-    "ts-loader": "^5.3.3",
-    "typescript": "^3.2.4",
-    "webpack": "^4.29.0",
-    "webpack-node-externals": "^1.7.2"
+    "serverless-offline": "^6.4.0",
+    "serverless-webpack": "^5.3.2",
+    "ts-loader": "^8.0.0",
+    "typescript": "^3.9.6",
+    "webpack": "^4.43.0",
+    "webpack-node-externals": "^2.3.0"
   },
   "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
   "license": "MIT"
