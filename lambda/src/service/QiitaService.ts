@@ -1,6 +1,6 @@
 import * as dayjs from 'dayjs';
 import { qiitaApi } from '../api/QiitaApi';
-import { qiitaHistoryService } from './QiitaHistoryService';
+import { qiitaHistoryRepository } from '../repository/QiitaHistoryRepository';
 
 async function getItems({ userId }) {
   try {
@@ -11,6 +11,7 @@ async function getItems({ userId }) {
       String(i + 1),
     );
 
+    // 1ページ100件までしか取れないからページ数分だけAPIを叩いて結果をマージしてる
     let items = [];
     for await (const page of pageCountList) {
       const result = await qiitaApi.getItems({ userId, page });
@@ -24,7 +25,7 @@ async function getItems({ userId }) {
 
 async function saveItemInfo({ userId }) {
   const date = dayjs().format('YYYY-MM-DD');
-  const result = await this.getItems({ userId });
+  const result = await getItems({ userId });
 
   // ユーザが存在しない場合
   if (!result) return;
@@ -37,20 +38,20 @@ async function saveItemInfo({ userId }) {
 
   console.log(JSON.stringify({ items, total }));
 
-  await qiitaHistoryService.put({ userId, date, items, total });
+  await qiitaHistoryRepository.put({ userId, date, items, total });
 }
 
 async function getLikeCount({ qiitaId, startDate, endDate }) {
   try {
     const {
       Item: startDateHistory,
-    } = await qiitaHistoryService.findByUserIdAndDate({
+    } = await qiitaHistoryRepository.findByUserIdAndDate({
       userId: qiitaId,
       date: startDate,
     });
     const {
       Item: endDateHistory,
-    } = await qiitaHistoryService.findByUserIdAndDate({
+    } = await qiitaHistoryRepository.findByUserIdAndDate({
       userId: qiitaId,
       date: endDate,
     });

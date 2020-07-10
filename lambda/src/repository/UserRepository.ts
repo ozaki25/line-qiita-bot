@@ -15,14 +15,11 @@ function findByLineId({ lineId }) {
 }
 
 function put({ lineId, qiitaId }) {
-  const params = {
-    TableName: tableName,
-    Item: { lineId, qiitaId },
-  };
+  const params = { TableName: tableName, Item: { lineId, qiitaId } };
   return dynamo.put(params).promise();
 }
 
-export const userService = {
+export const userRepository = {
   scan,
   findByLineId,
   put,

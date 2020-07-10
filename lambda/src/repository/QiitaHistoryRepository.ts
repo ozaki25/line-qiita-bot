@@ -22,7 +22,7 @@ function put({ userId, date, items, total }) {
   return dynamo.put(params).promise();
 }
 
-export const qiitaHistoryService = {
+export const qiitaHistoryRepository = {
   findByUserId,
   findByUserIdAndDate,
   put,

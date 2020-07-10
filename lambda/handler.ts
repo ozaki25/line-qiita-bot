@@ -3,7 +3,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import * as dayjs from 'dayjs';
 import 'source-map-support/register';
 import { pushText, pushImage } from './src/api/LineApi';
-import { userService } from './src/service/UserService';
+import { userRepository } from './src/repository/UserRepository';
 import { qiitaService } from './src/service/QiitaService';
 import { captureService } from './src/service/CaptureService';
 import { uniq } from './src/util/arrayUtil';
@@ -20,7 +20,7 @@ export const addUser: APIGatewayProxyHandler = async e => {
     console.log(e.body);
     const body = JSON.parse(e.body);
     const { lineId, qiitaId } = body;
-    await userService.put({ lineId, qiitaId });
+    await userRepository.put({ lineId, qiitaId });
     return {
       statusCode: 200,
       headers: responseHeders,
@@ -40,7 +40,7 @@ export const getUser: APIGatewayProxyHandler = async e => {
   try {
     console.log(e.queryStringParameters);
     const { lineId } = e.queryStringParameters;
-    const { Item } = await userService.findByLineId({ lineId });
+    const { Item } = await userRepository.findByLineId({ lineId });
     return {
       statusCode: 200,
       headers: responseHeders,
@@ -58,7 +58,7 @@ export const getUser: APIGatewayProxyHandler = async e => {
 
 export const saveQiitaInfo: APIGatewayProxyHandler = async () => {
   try {
-    const users: DocumentClient.ScanOutput = await userService.scan();
+    const users: DocumentClient.ScanOutput = await userRepository.scan();
     console.log(JSON.stringify(users));
 
     const qiitaIds = uniq(users.Items.map(({ qiitaId }) => qiitaId));
@@ -86,7 +86,7 @@ export const pushDailyLikeCount: APIGatewayProxyHandler = async () => {
     const base = dayjs();
     const startDate = base.subtract(1, 'day').format('YYYY-MM-DD');
     const endDate = base.format('YYYY-MM-DD');
-    const users: DocumentClient.ScanOutput = await userService.scan();
+    const users: DocumentClient.ScanOutput = await userRepository.scan();
     console.log(JSON.stringify(users));
 
     await Promise.all(
@@ -127,7 +127,7 @@ export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
     const base = dayjs();
     const startDate = base.subtract(7, 'day').format('YYYY-MM-DD');
     const endDate = base.format('YYYY-MM-DD');
-    const users: DocumentClient.ScanOutput = await userService.scan();
+    const users: DocumentClient.ScanOutput = await userRepository.scan();
     console.log(JSON.stringify(users));
 
     await Promise.all(
