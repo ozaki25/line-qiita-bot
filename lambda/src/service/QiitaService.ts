@@ -2,30 +2,24 @@ import * as dayjs from 'dayjs';
 import { qiitaApi } from '../api/QiitaApi';
 import { qiitaHistoryRepository } from '../repository/QiitaHistoryRepository';
 
-async function getItems({ userId }) {
-  try {
-    const user = await qiitaApi.getUser({ userId });
-    const itemCount = user.items_count;
-    const pageCount = Math.ceil(itemCount / 100);
-    const pageCountList = [...new Array(pageCount)].map((_, i) =>
-      String(i + 1),
-    );
+async function getItems(userId: string) {
+  const user = await qiitaApi.getUser(userId);
+  const itemCount = user.items_count;
+  const pageCount = Math.ceil(itemCount / 100);
+  const pageCountList = [...new Array(pageCount)].map((_, i) => i + 1);
 
-    // 1ページ100件までしか取れないからページ数分だけAPIを叩いて結果をマージしてる
-    let items = [];
-    for await (const page of pageCountList) {
-      const result = await qiitaApi.getItems({ userId, page });
-      if (result) items.push(...result);
-    }
-    return items;
-  } catch (e) {
-    return null;
+  // 1ページ100件までしか取れないからページ数分だけAPIを叩いて結果をマージしてる
+  let items = [];
+  for await (const page of pageCountList) {
+    const result = await qiitaApi.getItems(userId, page);
+    if (result) items.push(...result);
   }
+  return items;
 }
 
-async function saveItemInfo({ userId }) {
+async function saveItemInfo(userId: string) {
   const date = dayjs().format('YYYY-MM-DD');
-  const result = await getItems({ userId });
+  const result = await getItems(userId);
 
   // ユーザが存在しない場合
   if (!result) return;
@@ -38,56 +32,47 @@ async function saveItemInfo({ userId }) {
 
   console.log(JSON.stringify({ items, total }));
 
-  await qiitaHistoryRepository.put({ userId, date, items, total });
+  await qiitaHistoryRepository.put(userId, date, items, total);
 }
 
-async function getLikeCount({ qiitaId, startDate, endDate }) {
-  try {
-    const {
-      Item: startDateHistory,
-    } = await qiitaHistoryRepository.findByUserIdAndDate({
-      userId: qiitaId,
-      date: startDate,
-    });
-    const {
-      Item: endDateHistory,
-    } = await qiitaHistoryRepository.findByUserIdAndDate({
-      userId: qiitaId,
-      date: endDate,
-    });
-    console.log(JSON.stringify({ startDateHistory, endDateHistory }));
+async function getLikeCount(
+  qiitaId: string,
+  startDate: string,
+  endDate: string,
+) {
+  const {
+    Item: startDateHistory,
+  } = await qiitaHistoryRepository.findByUserIdAndDate(qiitaId, startDate);
+  const {
+    Item: endDateHistory,
+  } = await qiitaHistoryRepository.findByUserIdAndDate(qiitaId, endDate);
+  console.log(JSON.stringify({ startDateHistory, endDateHistory }));
 
-    const start = startDateHistory ? startDateHistory.total : null;
-    const end = endDateHistory ? endDateHistory.total : null;
-    const count = Number.isNaN(end - start) ? null : end - start;
-    console.log({ start, end, count });
-    return { start, end, count };
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
+  const start: number = startDateHistory ? startDateHistory.total : 0;
+  const end: number = endDateHistory ? endDateHistory.total : 0;
+  const count = Number.isNaN(end - start) ? 0 : end - start;
+  console.log({ start, end, count });
+  return { start, end, count };
 }
 
-async function getLikeCounts({ qiitaId, startDate, endDate }) {
-  try {
-    const start = dayjs(startDate);
-    const end = dayjs(endDate);
-    const count = end.diff(start, 'day');
-    const result = await Promise.all(
-      [...Array(count)].map(async (_, i) => {
-        const { count } = await getLikeCount({
-          qiitaId,
-          startDate: start.add(i, 'day').format('YYYY-MM-DD'),
-          endDate: start.add(i + 1, 'day').format('YYYY-MM-DD'),
-        });
-        return count;
-      }),
-    );
-    return result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
+async function getLikeCounts(
+  qiitaId: string,
+  startDate: string,
+  endDate: string,
+) {
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
+  const days = end.diff(start, 'day');
+  const result = await Promise.all(
+    [...Array(days)].map(async (_, i) => {
+      return await getLikeCount(
+        qiitaId,
+        start.add(i, 'day').format('YYYY-MM-DD'),
+        start.add(i + 1, 'day').format('YYYY-MM-DD'),
+      );
+    }),
+  );
+  return result;
 }
 
 export const qiitaService = {

@@ -7,22 +7,18 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
-async function getUser({ userId }) {
-  const res = await fetch(`${url}/users/${userId}`, {
-    headers,
-  });
+async function getUser(userId: string) {
+  const res = await fetch(`${url}/users/${userId}`, { headers });
   const json = await res.json();
   console.log(json);
   if (!res.ok) throw new Error(json.message);
   return json;
 }
 
-async function getItems({ userId, page }) {
+async function getItems(userId: string, page: number) {
   const res = await fetch(
     `${url}/users/${userId}/items?per_page=100&page=${page}`,
-    {
-      headers,
-    },
+    { headers },
   );
   const json = await res.json();
   // console.log(json);

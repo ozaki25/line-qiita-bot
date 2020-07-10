@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
 
-const tableName = process.env.USER_TABLE;
+const tableName = process.env.USER_TABLE || '';
 
 const dynamo = new DynamoDB.DocumentClient();
 
@@ -9,12 +9,12 @@ function scan() {
   return dynamo.scan(params).promise();
 }
 
-function findByLineId({ lineId }) {
+function findByLineId(lineId: string) {
   const params = { TableName: tableName, Key: { lineId } };
   return dynamo.get(params).promise();
 }
 
-function put({ lineId, qiitaId }) {
+function put(lineId: string, qiitaId: string) {
   const params = { TableName: tableName, Item: { lineId, qiitaId } };
   return dynamo.put(params).promise();
 }

@@ -18,14 +18,21 @@ const {
   S3_BUCKET,
 } = process.env;
 
-function getCapturePageUrl(name: string, contributions: number[]) {
+function getCapturePageUrl(
+  name: string,
+  contributions: {
+    start: number;
+    end: number;
+    count: number;
+  }[],
+) {
   return `${CAPTURE_PAGE_URL}?q=${JSON.stringify([{ name, contributions }])}`;
 }
 
-async function invoke({ url }) {
+async function invoke(url: string) {
   try {
     const params = {
-      FunctionName: GET_CAPTURE_FUNCTION,
+      FunctionName: GET_CAPTURE_FUNCTION || '',
       InvocationType: 'RequestResponse',
       Payload: JSON.stringify({ url }),
     };
@@ -37,7 +44,7 @@ async function invoke({ url }) {
   }
 }
 
-async function excute({ url }) {
+async function excute(url: string) {
   const browser = await puppeteer.launch({
     args,
     defaultViewport,
@@ -57,7 +64,7 @@ async function excute({ url }) {
   });
 }
 
-async function getThumbnail({ image }) {
+async function getThumbnail(image: string) {
   return await sharp(image)
     .resize(250, 120, {
       fit: 'contain',
@@ -66,11 +73,11 @@ async function getThumbnail({ image }) {
     .toBuffer();
 }
 
-async function save({ data }) {
+async function save(data: Buffer) {
   const name = `${Date.now()}.png`;
   const params = {
     ACL: 'public-read',
-    Bucket: S3_BUCKET,
+    Bucket: S3_BUCKET || '',
     Body: data,
     ContentType: 'image/png',
     Key: name,

@@ -18,9 +18,9 @@ const responseHeders = {
 export const addUser: APIGatewayProxyHandler = async e => {
   try {
     console.log(e.body);
-    const body = JSON.parse(e.body);
+    const body = JSON.parse(e.body || '');
     const { lineId, qiitaId } = body;
-    await userRepository.put({ lineId, qiitaId });
+    await userRepository.put(lineId, qiitaId);
     return {
       statusCode: 200,
       headers: responseHeders,
@@ -39,8 +39,8 @@ export const addUser: APIGatewayProxyHandler = async e => {
 export const getUser: APIGatewayProxyHandler = async e => {
   try {
     console.log(e.queryStringParameters);
-    const { lineId } = e.queryStringParameters;
-    const { Item } = await userRepository.findByLineId({ lineId });
+    const { lineId } = e.queryStringParameters as { lineId: string };
+    const { Item } = await userRepository.findByLineId(lineId);
     return {
       statusCode: 200,
       headers: responseHeders,
@@ -60,12 +60,13 @@ export const saveQiitaInfo: APIGatewayProxyHandler = async () => {
   try {
     const users: DocumentClient.ScanOutput = await userRepository.scan();
     console.log(JSON.stringify(users));
+    if (!users || !users.Items) throw new Error('no users');
 
     const qiitaIds = uniq(users.Items.map(({ qiitaId }) => qiitaId));
     console.log({ qiitaIds });
 
     await Promise.all(
-      qiitaIds.map(userId => qiitaService.saveItemInfo({ userId })),
+      qiitaIds.map(userId => qiitaService.saveItemInfo(userId)),
     );
 
     return {
@@ -88,24 +89,24 @@ export const pushDailyLikeCount: APIGatewayProxyHandler = async () => {
     const endDate = base.format('YYYY-MM-DD');
     const users: DocumentClient.ScanOutput = await userRepository.scan();
     console.log(JSON.stringify(users));
+    if (!users || !users.Items) throw new Error('no users');
 
     await Promise.all(
       users.Items.map(async ({ lineId, qiitaId }) => {
-        const { count, start, end } = await qiitaService.getLikeCount({
+        const { count, start, end } = await qiitaService.getLikeCount(
           qiitaId,
           startDate,
           endDate,
-        });
+        );
         // 当日分のデータがなければ対象外
         if (end === null) return null;
 
-        const userId = lineId;
         const date = base.subtract(1, 'day').format('YYYY/MM/DD');
         const text =
           start === null && end !== null
             ? `初回登録が完了しました。明日から通知が始まります！`
             : `${date}のいいね数は${count}件でした！`;
-        await pushText({ userId, text });
+        await pushText(lineId, text);
       }),
     );
 
@@ -129,31 +130,34 @@ export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
     const endDate = base.format('YYYY-MM-DD');
     const users: DocumentClient.ScanOutput = await userRepository.scan();
     console.log(JSON.stringify(users));
+    if (!users || !users.Items) throw new Error('no users');
 
     await Promise.all(
       users.Items.map(async ({ lineId, qiitaId }) => {
-        const { count, start, end } = await qiitaService.getLikeCount({
+        const { count, start, end } = await qiitaService.getLikeCount(
           qiitaId,
           startDate,
           endDate,
-        });
+        );
         // 一週間前か当日のどちらか片方でもデータがなければ対象外
         if (start === null || end === null) return null;
         const userId = lineId;
         const text = `先週のいいね数は${count}件でした！`;
 
-        const contributions = await qiitaService.getLikeCounts({
+        const contributions = await qiitaService.getLikeCounts(
           qiitaId,
           startDate,
           endDate,
-        });
+        );
         const url = captureService.getCapturePageUrl(qiitaId, contributions);
-        const { Payload } = await captureService.invoke({ url });
+        const { Payload } = (await captureService.invoke(url)) as {
+          Payload: any;
+        };
         console.log({ Payload });
         const { imageUrl, thumbnailUrl } = JSON.parse(String(Payload)).body;
 
-        await pushText({ userId, text });
-        await pushImage({ userId, imageUrl, thumbnailUrl });
+        await pushText(userId, text);
+        await pushImage(userId, imageUrl, thumbnailUrl);
       }),
     );
 
@@ -174,12 +178,12 @@ export const getCapture = async (event: { url: string }) => {
   try {
     console.log(JSON.stringify(event));
     const { url } = event;
-    const image = await captureService.excute({ url });
+    const image = await captureService.excute(url);
     console.log({ image });
-    const thumbnail = await captureService.getThumbnail({ image });
+    const thumbnail = await captureService.getThumbnail(image);
     console.log({ thumbnail });
-    const imageUrl = await captureService.save({ data: image });
-    const thumbnailUrl = await captureService.save({ data: thumbnail });
+    const imageUrl = await captureService.save(image);
+    const thumbnailUrl = await captureService.save(thumbnail);
     console.log({ imageUrl, thumbnailUrl });
     return {
       statusCode: 200,
