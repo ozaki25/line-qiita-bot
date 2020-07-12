@@ -65,11 +65,12 @@ async function getLikeCounts(
   const days = end.diff(start, 'day');
   const result = await Promise.all(
     [...Array(days)].map(async (_, i) => {
-      return await getLikeCount(
+      const { count } = await getLikeCount(
         qiitaId,
         start.add(i, 'day').format('YYYY-MM-DD'),
         start.add(i + 1, 'day').format('YYYY-MM-DD'),
       );
+      return count;
     }),
   );
   return result;

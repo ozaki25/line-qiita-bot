@@ -18,17 +18,8 @@ const {
   S3_BUCKET,
 } = process.env;
 
-function getCapturePageUrl(
-  name: string,
-  contributions: {
-    start: number | null;
-    end: number | null;
-    count: number;
-  }[],
-) {
-  return `${CAPTURE_PAGE_URL}?q=${encodeURIComponent(
-    JSON.stringify([{ name, contributions }]),
-  )}`;
+function getCapturePageUrl(name: string, contributions: number[]) {
+  return `${CAPTURE_PAGE_URL}?q=${JSON.stringify([{ name, contributions }])}`;
 }
 
 async function invoke(url: string) {
