@@ -21,12 +21,14 @@ const {
 function getCapturePageUrl(
   name: string,
   contributions: {
-    start: number;
-    end: number;
+    start: number | null;
+    end: number | null;
     count: number;
   }[],
 ) {
-  return `${CAPTURE_PAGE_URL}?q=${JSON.stringify([{ name, contributions }])}`;
+  return `${CAPTURE_PAGE_URL}?q=${encodeURIComponent(
+    JSON.stringify([{ name, contributions }]),
+  )}`;
 }
 
 async function invoke(url: string) {
