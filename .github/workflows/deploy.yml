@@ -1,7 +1,9 @@
 name: deploy graph page
-on: [push, repository_dispatch]
-  branches:
-    - master
+on: [
+  push:
+    branches:
+      - master
+  repository_dispatch
 jobs:
   deploy:
     runs-on: ubuntu-latest
