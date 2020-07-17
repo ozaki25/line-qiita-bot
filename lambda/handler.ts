@@ -8,31 +8,16 @@ import { qiitaService } from './src/service/QiitaService';
 import { captureService } from './src/service/CaptureService';
 import { uniq } from './src/util/arrayUtil';
 
-const responseHeders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'Origin, X-Requested-With, Content-Type, Accept',
-  'Access-Control-Allow-Methods': '*',
-};
-
 export const addUser: APIGatewayProxyHandler = async e => {
   try {
     console.log(e.body);
     const body = JSON.parse(e.body || '');
     const { lineId, qiitaId } = body;
     await userRepository.put(lineId, qiitaId);
-    return {
-      statusCode: 200,
-      headers: responseHeders,
-      body: JSON.stringify({ message: 'OK' }),
-    };
+    return returnResponse(200, 'OK');
   } catch (error) {
     console.log(error.message);
-    return {
-      statusCode: 500,
-      headers: responseHeders,
-      body: JSON.stringify({ message: error.message }),
-    };
+    return returnResponse(500, error.message);
   }
 };
 
@@ -41,18 +26,10 @@ export const getUser: APIGatewayProxyHandler = async e => {
     console.log(e.queryStringParameters);
     const { lineId } = e.queryStringParameters as { lineId: string };
     const { Item } = await userRepository.findByLineId(lineId);
-    return {
-      statusCode: 200,
-      headers: responseHeders,
-      body: JSON.stringify(Item),
-    };
+    return returnResponse(200, JSON.stringify(Item));
   } catch (error) {
     console.log(error.message);
-    return {
-      statusCode: 500,
-      headers: responseHeders,
-      body: JSON.stringify({ message: error.message }),
-    };
+    return returnResponse(500, error.message);
   }
 };
 
@@ -68,17 +45,10 @@ export const saveQiitaInfo: APIGatewayProxyHandler = async () => {
     await Promise.all(
       qiitaIds.map(userId => qiitaService.saveItemInfo(userId)),
     );
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'OK' }),
-    };
+    return returnResponse(200, 'OK');
   } catch (error) {
     console.log(error.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: error.message }),
-    };
+    return returnResponse(500, error.message);
   }
 };
 
@@ -109,17 +79,10 @@ export const pushDailyLikeCount: APIGatewayProxyHandler = async () => {
         await pushText(lineId, text);
       }),
     );
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'OK' }),
-    };
+    return returnResponse(200, 'OK');
   } catch (error) {
     console.log(error.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: error.message }),
-    };
+    return returnResponse(500, error.message);
   }
 };
 
@@ -160,17 +123,10 @@ export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
         await pushImage(userId, imageUrl, thumbnailUrl);
       }),
     );
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'OK' }),
-    };
+    return returnResponse(200, 'OK');
   } catch (error) {
     console.log(error.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: error.message }),
-    };
+    return returnResponse(500, error.message);
   }
 };
 
@@ -191,9 +147,19 @@ export const getCapture = async (event: { url: string }) => {
     };
   } catch (error) {
     console.log(error.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: error.message }),
-    };
+    return returnResponse(500, error.message);
   }
 };
+
+const responseHeders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'Origin, X-Requested-With, Content-Type, Accept',
+  'Access-Control-Allow-Methods': '*',
+};
+
+const returnResponse = (code: number, message: string) => ({
+  statusCode: code,
+  headers: responseHeders,
+  body: JSON.stringify({ message }),
+});
