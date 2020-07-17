@@ -106,6 +106,13 @@ functions:
     timeout: 20
     layers:
       - { Ref: LineQiitaBotLambdaLayer }
+  triggerGitHubActions:
+    handler: handler.triggerGitHubActions
+    environment:
+      GITHUB_ACTIONS_URL: ${env:GITHUB_ACTIONS_URL}
+      GITHUB_TOKEN: ${env:GITHUB_TOKEN}
+    layers:
+      - { Ref: LineQiitaBotLambdaLayer }
 layers:
   lineQiitaBot:
     path: src/layers

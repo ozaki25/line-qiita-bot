@@ -1,8 +1,9 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import 'source-map-support/register';
 import { pushText, pushImage } from './src/api/LineApi';
+import { dispatchGitHubActions } from './src/api/GitHubApi';
 import { userRepository } from './src/repository/UserRepository';
 import { qiitaService } from './src/service/QiitaService';
 import { captureService } from './src/service/CaptureService';
@@ -145,6 +146,16 @@ export const getCapture = async (event: { url: string }) => {
       statusCode: 200,
       body: { imageUrl, thumbnailUrl },
     };
+  } catch (error) {
+    console.log(error.message);
+    return returnResponse(500, error.message);
+  }
+};
+
+export const triggerGitHubActions: APIGatewayProxyHandler = async () => {
+  try {
+    await dispatchGitHubActions();
+    return returnResponse(200, 'OK');
   } catch (error) {
     console.log(error.message);
     return returnResponse(500, error.message);
