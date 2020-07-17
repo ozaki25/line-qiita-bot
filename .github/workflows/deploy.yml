@@ -1,8 +1,5 @@
 name: deploy graph page
 on: repository_dispatch
-defaults:
-  run:
-    working-directory: liff/graph
 jobs:
   deploy:
     runs-on: ubuntu-latest
