@@ -14,5 +14,5 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-args: '--prod'
           vercel-org-id: ozaki25
-          vercel-project-id: qiita-grahp-ozaki25
+          vercel-project-id: qiita-graph-ozaki25
           working-directory: ./liff/graph
