@@ -10,7 +10,7 @@ async function dispatchGitHubActions() {
       Authorization: `token ${token}`,
       accept: 'application/vnd.github.v3+json',
     },
-    body: JSON.stringify({ event_type: 'deploy' }),
+    body: JSON.stringify({ event_type: 'lambda' }),
   });
   console.log(JSON.stringify(res));
   if (!res.ok) throw new Error(JSON.stringify(res));
