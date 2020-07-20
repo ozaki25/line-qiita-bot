@@ -5,6 +5,7 @@ import 'source-map-support/register';
 import { pushText, pushImage } from './src/api/LineApi';
 import { dispatchGitHubActions } from './src/api/GitHubApi';
 import { userRepository } from './src/repository/UserRepository';
+import { qiitaHistoryRepository } from './src/repository/QiitaHistoryRepository';
 import { qiitaService } from './src/service/QiitaService';
 import { captureService } from './src/service/CaptureService';
 import { uniq } from './src/util/arrayUtil';
@@ -27,7 +28,36 @@ export const getUser: APIGatewayProxyHandler = async e => {
     console.log(e.queryStringParameters);
     const { lineId } = e.queryStringParameters as { lineId: string };
     const { Item } = await userRepository.findByLineId(lineId);
-    return returnResponse(200, JSON.stringify(Item));
+    console.log(Item);
+    return returnResponse(200, Item);
+  } catch (error) {
+    console.log(error.message);
+    return returnResponse(500, error.message);
+  }
+};
+
+export const getLikeCount: APIGatewayProxyHandler = async e => {
+  try {
+    console.log(e.queryStringParameters);
+    console.log(e.pathParameters);
+    const { lineId } = e.pathParameters as { lineId: string };
+    // yyyy-mm-dd
+    const { start, end } = e.queryStringParameters as {
+      start: string;
+      end: string;
+    };
+
+    const { Item } = await userRepository.findByLineId(lineId);
+
+    if (!Item || Item.qiitaId) return returnResponse(500, 'user not found');
+
+    const { Items } = await qiitaHistoryRepository.findByUserIdAndDateBetween(
+      Item.qiitaId,
+      start,
+      end,
+    );
+    console.log(Items);
+    return returnResponse(200, Items);
   } catch (error) {
     console.log(error.message);
     return returnResponse(500, error.message);
@@ -169,7 +199,7 @@ const responseHeders = {
   'Access-Control-Allow-Methods': '*',
 };
 
-const returnResponse = (code: number, message: string) => ({
+const returnResponse = (code: number, message: any) => ({
   statusCode: code,
   headers: responseHeders,
   body: JSON.stringify({ message }),

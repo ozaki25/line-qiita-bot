@@ -14,6 +14,27 @@ function findByUserIdAndDate(userId: string, date: string) {
   return dynamo.get(params).promise();
 }
 
+function findByUserIdAndDateBetween(
+  userId: string,
+  start: string,
+  end: string,
+) {
+  const params = {
+    TableName: tableName,
+    KeyConditionExpression:
+      '#date BETWEEN :startDate and :endDate and userId = :userId',
+    ExpressionAttributeNames: {
+      '#date': 'date',
+    },
+    ExpressionAttributeValues: {
+      ':startDate': start,
+      ':endDate': end,
+      ':userId': userId,
+    },
+  };
+  return dynamo.query(params).promise();
+}
+
 function put(
   userId: string,
   date: string,
@@ -30,5 +51,6 @@ function put(
 export const qiitaHistoryRepository = {
   findByUserId,
   findByUserIdAndDate,
+  findByUserIdAndDateBetween,
   put,
 };
