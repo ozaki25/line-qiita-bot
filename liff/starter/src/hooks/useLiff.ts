@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { liff } from '../lib/liff';
+import liff from '@line/liff';
 
 type Props = {
   liffId: string;
@@ -8,7 +8,7 @@ type Props = {
 type Profile = {
   userId: string;
   displayName: string;
-  pictureUrl: string;
+  pictureUrl?: string;
   statusMessage?: string;
 };
 
