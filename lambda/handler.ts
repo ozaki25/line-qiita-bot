@@ -36,6 +36,17 @@ export const getUser: APIGatewayProxyHandler = async e => {
   }
 };
 
+export const getUsers: APIGatewayProxyHandler = async () => {
+  try {
+    const { Items } = await userRepository.scan();
+    console.log(Items);
+    return returnResponse(200, Items);
+  } catch (error) {
+    console.log(error.message);
+    return returnResponse(500, error.message);
+  }
+};
+
 export const getLikeCount: APIGatewayProxyHandler = async e => {
   try {
     console.log(e.queryStringParameters);
