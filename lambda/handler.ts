@@ -16,10 +16,10 @@ export const addUser: APIGatewayProxyHandler = async e => {
     const body = JSON.parse(e.body || '');
     const { lineId, qiitaId } = body;
     await userRepository.put(lineId, qiitaId);
-    return returnResponse(200, 'OK');
+    return returnResponse(200, { message: 'OK' });
   } catch (error) {
     console.log(error.message);
-    return returnResponse(500, error.message);
+    return returnResponse(500, { message: error.message });
   }
 };
 
@@ -32,7 +32,7 @@ export const getUser: APIGatewayProxyHandler = async e => {
     return returnResponse(200, Item);
   } catch (error) {
     console.log(error.message);
-    return returnResponse(500, error.message);
+    return returnResponse(500, { message: error.message });
   }
 };
 
@@ -43,7 +43,7 @@ export const getUsers: APIGatewayProxyHandler = async () => {
     return returnResponse(200, Items);
   } catch (error) {
     console.log(error.message);
-    return returnResponse(500, error.message);
+    return returnResponse(500, { message: error.message });
   }
 };
 
@@ -60,7 +60,9 @@ export const getLikeCount: APIGatewayProxyHandler = async e => {
 
     const { Item } = await userRepository.findByLineId(lineId);
 
-    if (!Item || Item.qiitaId) return returnResponse(500, 'user not found');
+    if (!Item || Item.qiitaId) {
+      return returnResponse(500, { message: 'user not found' });
+    }
 
     const { Items } = await qiitaHistoryRepository.findByUserIdAndDateBetween(
       Item.qiitaId,
@@ -71,7 +73,7 @@ export const getLikeCount: APIGatewayProxyHandler = async e => {
     return returnResponse(200, Items);
   } catch (error) {
     console.log(error.message);
-    return returnResponse(500, error.message);
+    return returnResponse(500, { message: error.message });
   }
 };
 
@@ -87,10 +89,10 @@ export const saveQiitaInfo: APIGatewayProxyHandler = async () => {
     await Promise.all(
       qiitaIds.map(userId => qiitaService.saveItemInfo(userId)),
     );
-    return returnResponse(200, 'OK');
+    return returnResponse(200, { message: 'OK' });
   } catch (error) {
     console.log(error.message);
-    return returnResponse(500, error.message);
+    return returnResponse(500, { message: error.message });
   }
 };
 
@@ -121,10 +123,10 @@ export const pushDailyLikeCount: APIGatewayProxyHandler = async () => {
         await pushText(lineId, text);
       }),
     );
-    return returnResponse(200, 'OK');
+    return returnResponse(200, { message: 'OK' });
   } catch (error) {
     console.log(error.message);
-    return returnResponse(500, error.message);
+    return returnResponse(500, { message: error.message });
   }
 };
 
@@ -165,10 +167,10 @@ export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
         await pushImage(userId, imageUrl, thumbnailUrl);
       }),
     );
-    return returnResponse(200, 'OK');
+    return returnResponse(200, { message: 'OK' });
   } catch (error) {
     console.log(error.message);
-    return returnResponse(500, error.message);
+    return returnResponse(500, { message: error.message });
   }
 };
 
@@ -183,23 +185,20 @@ export const getCapture = async (event: { url: string }) => {
     const imageUrl = await captureService.save(image);
     const thumbnailUrl = await captureService.save(thumbnail);
     console.log({ imageUrl, thumbnailUrl });
-    return {
-      statusCode: 200,
-      body: { imageUrl, thumbnailUrl },
-    };
+    return returnResponse(200, { imageUrl, thumbnailUrl });
   } catch (error) {
     console.log(error.message);
-    return returnResponse(500, error.message);
+    return returnResponse(500, { message: error.message });
   }
 };
 
 export const triggerGitHubActions: APIGatewayProxyHandler = async () => {
   try {
     await dispatchGitHubActions();
-    return returnResponse(200, 'OK');
+    return returnResponse(200, { message: 'OK' });
   } catch (error) {
     console.log(error.message);
-    return returnResponse(500, error.message);
+    return returnResponse(500, { message: error.message });
   }
 };
 
@@ -210,8 +209,8 @@ const responseHeders = {
   'Access-Control-Allow-Methods': '*',
 };
 
-const returnResponse = (code: number, message: any) => ({
+const returnResponse = (code: number, body: any) => ({
   statusCode: code,
   headers: responseHeders,
-  body: JSON.stringify({ message }),
+  body: JSON.stringify(body),
 });
