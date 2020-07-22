@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import Router from 'next/router';
 import Layout from '../components/Layout';
 import useLiff from '../hooks/useLiff';
 
@@ -6,11 +8,16 @@ type Props = {
 };
 
 function Top({ liffId }: Props) {
-  const { loading, error } = useLiff({ liffId });
-  console.log(loading, error);
+  const { loading, error, profile } = useLiff({ liffId });
+
+  useEffect(() => {
+    if (profile) Router.replace(`/graph/${profile.userId}`);
+  }, [profile]);
+
   return (
     <Layout title="Hello">
-      {loading ? <p>...loading</p> : <h1>Hello</h1>}
+      {loading && <p>...loading</p>}
+      {error && <p>{error}</p>}
     </Layout>
   );
 }
