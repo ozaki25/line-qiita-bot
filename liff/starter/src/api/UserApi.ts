@@ -14,7 +14,7 @@ export type PostUserProps = {
 };
 
 async function getUser({ lineId }: GetUserProps) {
-  const res = await fetch(`${url}/users?lineId=${lineId}`, { headers });
+  const res = await fetch(`${url}/users/${lineId}`, { headers });
   const json = await res.json();
   console.log(json);
   if (!res.ok) throw new Error(json.message);
