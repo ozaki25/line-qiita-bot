@@ -1,16 +1,19 @@
 import dayjs from 'dayjs';
 import Layout from '../../components/Layout';
 import { userApi } from '../../api/index';
+import LineChart from '../../components/LineChart';
 
 type Props = {
-  likeCountList: { total: number }[];
+  likeCountList: { total: number; date: string }[];
 };
 
 function Graph({ likeCountList }: Props) {
   console.log({ likeCountList });
+  const labels = likeCountList.map(({ date }) => date);
+  const data = likeCountList.map(({ total }) => total);
   return (
     <Layout title="Graph">
-      <h1>Hello</h1>
+      <LineChart label="合計いいね数" labels={labels} data={data} />
     </Layout>
   );
 }

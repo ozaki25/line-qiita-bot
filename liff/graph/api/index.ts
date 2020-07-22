@@ -16,7 +16,7 @@ async function getUsers(): GetUserResponse {
   return json;
 }
 
-type GetLikeCountResponse = Promise<{ total: number }[]>;
+type GetLikeCountResponse = Promise<{ total: number; date: string }[]>;
 
 async function getLikeCount(
   lineId: string,
