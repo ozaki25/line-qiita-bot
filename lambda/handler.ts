@@ -25,8 +25,8 @@ export const addUser: APIGatewayProxyHandler = async e => {
 
 export const getUser: APIGatewayProxyHandler = async e => {
   try {
-    console.log(e.queryStringParameters);
-    const { lineId } = e.queryStringParameters as { lineId: string };
+    console.log(e.pathParameters);
+    const { lineId } = e.pathParameters as { lineId: string };
     const { Item } = await userRepository.findByLineId(lineId);
     console.log(Item);
     return returnResponse(200, Item);

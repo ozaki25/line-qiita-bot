@@ -74,11 +74,11 @@ functions:
     events:
       - http:
           method: get
-          path: users
+          path: users/{lineId}
           cors: true
           request:
             parameters:
-              querystrings:
+              paths:
                 lineId: true
     layers:
       - { Ref: LineQiitaBotLambdaLayer }
