@@ -59,8 +59,8 @@ export const getLikeCount: APIGatewayProxyHandler = async e => {
     };
 
     const { Item } = await userRepository.findByLineId(lineId);
-
-    if (!Item || Item.qiitaId) {
+    console.log(Item);
+    if (!Item || !Item.qiitaId) {
       return returnResponse(500, { message: 'user not found' });
     }
 
