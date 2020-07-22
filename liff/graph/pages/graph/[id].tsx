@@ -15,11 +15,15 @@ function Graph({ likeCountList }: Props) {
   );
 }
 
-export async function getStaticProps({ lineId }: { lineId: string }) {
+type GetStaticPropsProps = {
+  params: { lineId: string };
+};
+
+export async function getStaticProps({ params }: GetStaticPropsProps) {
   const today = dayjs();
   const start = today.subtract(7, 'day').format('YYYY-MM-DD');
   const end = today.subtract(1, 'day').format('YYYY-MM-DD');
-  const likeCountList = await userApi.getLikeCount(lineId, start, end);
+  const likeCountList = await userApi.getLikeCount(params.lineId, start, end);
   return { props: { likeCountList } };
 }
 
