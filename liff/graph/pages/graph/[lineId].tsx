@@ -20,6 +20,7 @@ type GetStaticPropsProps = {
 };
 
 export async function getStaticProps({ params }: GetStaticPropsProps) {
+  console.log({ params });
   const today = dayjs();
   const start = today.subtract(7, 'day').format('YYYY-MM-DD');
   const end = today.subtract(1, 'day').format('YYYY-MM-DD');
@@ -29,6 +30,7 @@ export async function getStaticProps({ params }: GetStaticPropsProps) {
 
 export async function getStaticPaths() {
   const users = await userApi.getUsers();
+  console.log({ users });
   const paths = users.map(({ lineId }) => `/graph/${lineId}`);
   return { paths, fallback: false };
 }
