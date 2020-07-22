@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import Layout from '../../components/Layout';
 import { userApi } from '../../api/index';
@@ -9,11 +10,41 @@ type Props = {
 
 function Graph({ likeCountList }: Props) {
   console.log({ likeCountList });
-  const labels = likeCountList.map(({ date }) => date);
-  const data = likeCountList.map(({ total }) => total);
+  const [label, setLabel] = useState<string>('');
+  const [labels, setLabels] = useState<string[]>([]);
+  const [data, setData] = useState<number[]>([]);
+
+  const onClickByDay = () => {
+    const label = '日別いいね数';
+    const labels = likeCountList.map(({ date }) => date).slice(1);
+    const data = likeCountList.reduce<number[]>((prev, { total }, i, list) => {
+      return i === 0 ? [...prev] : [...prev, total - list[i - 1].total];
+    }, []);
+    setLabel(label);
+    setLabels(labels);
+    setData(data);
+  };
+
+  const onClickTotal = () => {
+    const label = '合計いいね数';
+    const labels = likeCountList.map(({ date }) => date);
+    const data = likeCountList.map(({ total }) => total);
+    setLabel(label);
+    setLabels(labels);
+    setData(data);
+  };
+
+  useEffect(() => {
+    onClickByDay();
+  }, []);
+
   return (
     <Layout title="Graph">
-      <LineChart label="合計いいね数" labels={labels} data={data} />
+      <p>
+        <button onClick={onClickByDay}>日別いいね数</button>
+        <button onClick={onClickTotal}>合計いいね数</button>
+      </p>
+      <LineChart label={label} labels={labels} data={data} />
     </Layout>
   );
 }
@@ -24,7 +55,7 @@ type GetStaticPropsProps = {
 
 export async function getStaticProps({ params }: GetStaticPropsProps) {
   const today = dayjs();
-  const start = today.subtract(7, 'day').format('YYYY-MM-DD');
+  const start = today.subtract(8, 'day').format('YYYY-MM-DD');
   const end = today.subtract(1, 'day').format('YYYY-MM-DD');
   const likeCountList = await userApi.getLikeCount(params.lineId, start, end);
   return { props: { likeCountList } };
