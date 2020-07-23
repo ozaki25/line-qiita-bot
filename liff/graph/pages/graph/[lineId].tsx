@@ -18,7 +18,7 @@ function Graph({ likeCountList }: Props) {
     const label = '日別いいね数';
     const labels = likeCountList
       .map(({ date }) => dayjs(date).format('M/D'))
-      .slice(1);
+      .slice(0, likeCountList.length - 1);
     const data = likeCountList.reduce<number[]>((prev, { total }, i, list) => {
       return i === 0 ? [...prev] : [...prev, total - list[i - 1].total];
     }, []);
@@ -57,8 +57,8 @@ type GetStaticPropsProps = {
 
 export async function getStaticProps({ params }: GetStaticPropsProps) {
   const today = dayjs();
-  const start = today.subtract(8, 'day').format('YYYY-MM-DD');
-  const end = today.subtract(1, 'day').format('YYYY-MM-DD');
+  const start = today.subtract(7, 'day').format('YYYY-MM-DD');
+  const end = today.format('YYYY-MM-DD');
   const likeCountList = await userApi.getLikeCount(params.lineId, start, end);
   return { props: { likeCountList } };
 }
