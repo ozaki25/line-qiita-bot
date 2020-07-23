@@ -9,7 +9,10 @@ type Props = {
 function LineChart({ label, labels, data }: Props) {
   return (
     <Line
-      data={{ labels, datasets: [{ label, data, lineTension: 0 }] }}
+      data={{
+        labels,
+        datasets: [{ label, data, lineTension: 0, spanGaps: false }],
+      }}
       options={{
         animation: {
           duration: 0,
@@ -18,6 +21,9 @@ function LineChart({ label, labels, data }: Props) {
           animationDuration: 0,
         },
         responsiveAnimationDuration: 0,
+        scales: {
+          yAxes: [{ ticks: { precision: 0 } }],
+        },
       }}
     />
   );
