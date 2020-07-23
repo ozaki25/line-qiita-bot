@@ -16,7 +16,9 @@ function Graph({ likeCountList }: Props) {
 
   const onClickByDay = () => {
     const label = '日別いいね数';
-    const labels = likeCountList.map(({ date }) => date).slice(1);
+    const labels = likeCountList
+      .map(({ date }) => dayjs(date).format('M/D'))
+      .slice(1);
     const data = likeCountList.reduce<number[]>((prev, { total }, i, list) => {
       return i === 0 ? [...prev] : [...prev, total - list[i - 1].total];
     }, []);
@@ -27,7 +29,7 @@ function Graph({ likeCountList }: Props) {
 
   const onClickTotal = () => {
     const label = '合計いいね数';
-    const labels = likeCountList.map(({ date }) => date);
+    const labels = likeCountList.map(({ date }) => dayjs(date).format('M/D'));
     const data = likeCountList.map(({ total }) => total);
     setLabel(label);
     setLabels(labels);
