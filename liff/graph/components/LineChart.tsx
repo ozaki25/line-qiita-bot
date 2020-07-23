@@ -9,7 +9,7 @@ type Props = {
 function LineChart({ label, labels, data }: Props) {
   return (
     <Line
-      data={{ labels, datasets: [{ label, data }] }}
+      data={{ labels, datasets: [{ label, data, lineTension: 0 }] }}
       options={{
         animation: {
           duration: 0,
