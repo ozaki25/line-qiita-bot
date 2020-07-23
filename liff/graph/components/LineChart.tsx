@@ -11,7 +11,7 @@ function LineChart({ label, labels, data }: Props) {
     <Line
       data={{
         labels,
-        datasets: [{ label, data, lineTension: 0, spanGaps: false }],
+        datasets: [{ label, data, lineTension: 0 }],
       }}
       options={{
         animation: {
