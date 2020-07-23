@@ -7,7 +7,20 @@ type Props = {
 };
 
 function LineChart({ label, labels, data }: Props) {
-  return <Line data={{ labels, datasets: [{ label, data }] }} />;
+  return (
+    <Line
+      data={{ labels, datasets: [{ label, data }] }}
+      options={{
+        animation: {
+          duration: 0,
+        },
+        hover: {
+          animationDuration: 0,
+        },
+        responsiveAnimationDuration: 0,
+      }}
+    />
+  );
 }
 
 export default LineChart;
