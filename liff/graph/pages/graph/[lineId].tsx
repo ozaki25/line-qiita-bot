@@ -59,7 +59,9 @@ export async function getStaticProps({ params }: GetStaticPropsProps) {
   const today = dayjs();
   const start = today.subtract(7, 'day').format('YYYY-MM-DD');
   const end = today.format('YYYY-MM-DD');
-  const likeCountList = await userApi.getLikeCount(params.lineId, start, end);
+  const { lineId } = params;
+  console.log({ lineId, start, end });
+  const likeCountList = await userApi.getLikeCount(lineId, start, end);
   return { props: { likeCountList } };
 }
 
