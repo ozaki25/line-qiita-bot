@@ -48,6 +48,8 @@ provider:
         - 'dynamodb:PutItem'
         - 'dynamodb:UpdateItem'
         - 'dynamodb:DeleteItem'
+        - 'dynamodb:ListStreams'
+        - 'dynamodb:DescribeTable'
       Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*'
     - Effect: Allow
       Action:
@@ -133,6 +135,17 @@ functions:
       - { Ref: LineQiitaBotLambdaLayer }
   triggerGitHubActions:
     handler: handler.triggerGitHubActions
+    events:
+      - stream:
+          type: dynamodb
+          batchSize: 1
+          startingPosition: LATEST
+          maximumRetryAttempts: 1
+          enabled: true
+          arn:
+            Fn::GetAtt:
+              - QiitaHistory
+              - StreamArn
     environment:
       GITHUB_ACTIONS_URL: ${env:GITHUB_ACTIONS_URL}
       GITHUB_TOKEN: ${env:GITHUB_TOKEN}
@@ -174,6 +187,8 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
     Capture:
       Type: AWS::S3::Bucket
       Properties:
