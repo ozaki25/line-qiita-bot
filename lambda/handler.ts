@@ -162,7 +162,6 @@ export const pushWeeklyLikeCount: APIGatewayProxyHandler = async () => {
         };
         console.log({ Payload });
         const { imageUrl, thumbnailUrl } = JSON.parse(String(Payload)).body;
-
         await pushText(userId, text);
         await pushImage(userId, imageUrl, thumbnailUrl);
       }),
@@ -185,10 +184,16 @@ export const getCapture = async (event: { url: string }) => {
     const imageUrl = await captureService.save(image);
     const thumbnailUrl = await captureService.save(thumbnail);
     console.log({ imageUrl, thumbnailUrl });
-    return returnResponse(200, { imageUrl, thumbnailUrl });
+    return {
+      statusCode: 200,
+      body: { imageUrl, thumbnailUrl },
+    };
   } catch (error) {
     console.log(error.message);
-    return returnResponse(500, { message: error.message });
+    return {
+      statusCode: 500,
+      body: { message: error.message },
+    };
   }
 };
 
